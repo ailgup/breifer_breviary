@@ -121,7 +121,7 @@ def main():
     story = []
     #add some flowables
     
-    for i in range (4000):
+    for i in range (40):
         story.append(Paragraph("O Lord open my lips...",stylePsalm))
         if i%20==0:
             box = DayHeader(date="March 19", title="Solemnity of St. Joseph",level="S")
@@ -142,7 +142,7 @@ def main():
             box = DayHeader(date="December 3", title="St. Francis Xavier",level="M")
             story.append(box)
             
-            box = DayHeader(date="Tuesday Week 3", title="Morning Prayer")
+            box = DayHeader(date="Tuesday Week III")
             story.append(box)
             
             story.append(Paragraph("O Lord open my lips...",stylePsalm))
@@ -161,6 +161,9 @@ def main():
             story.append(box)
             
             story.append(Paragraph("O Lord open my lips...",stylePsalm))
+            
+            box = DayHeader(date="Solemnity of Jesus Christ the King of the Universe")
+            story.append(box)
      # C6 = (114*mm,162*mm)
     doc = BaseDocTemplate('mydoc.pdf', pagesize=C6,
                             pageTemplates=[],
