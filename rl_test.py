@@ -15,7 +15,7 @@ from reportlab.lib.units import mm
 from reportlab.lib.colors import Color
 
 #homemade
-from day_header_flowable import DayHeader
+from day_header_flowable import DayHeader, HourHeader, Antiphon, Psalm
 
 
 
@@ -30,6 +30,8 @@ def main():
     pdfmetrics.registerFont(TTFont('Minion', 'Minion Pro Medium Cond Caption.ttf'))
     #used for day subheadings
     pdfmetrics.registerFont(TTFont('MinionSub', 'MinionPro-Subh.ttf'))
+    #used for hour headings
+    pdfmetrics.registerFont(TTFont('MinionSub_bold', 'Minion Pro Bold Subhead.ttf'))
 
     styles = getSampleStyleSheet()
 
@@ -122,52 +124,39 @@ def main():
     #add some flowables
     
     for i in range (40):
-        story.append(Paragraph("O Lord open my lips...",stylePsalm))
+       
         if i%20==0:
-            box = DayHeader(date="March 19", title="Solemnity of St. Joseph",level="S")
+            box = DayHeader(date="March 19", title="St. Joseph",level="S")
             story.append(box)
-            
-            story.append(Paragraph("O Lord open my lips...",stylePsalm))
-            
-            box = DayHeader(date="March 17", title="St. Patrick",level="m")
-            story.append(box)
-            
-            story.append(Paragraph("O Lord open my lips...",stylePsalm))
-            
-            box = DayHeader(date="February 2", title="Presentation of the Lord",level="F")
-            story.append(box)
-            
-            story.append(Paragraph("O Lord open my lips...",stylePsalm))
-            
-            box = DayHeader(date="December 3", title="St. Francis Xavier",level="M")
-            story.append(box)
-            
-            box = DayHeader(date="Tuesday Week III")
-            story.append(box)
-            
-            story.append(Paragraph("O Lord open my lips...",stylePsalm))
-            
-            box = DayHeader(date="Common of the Blessed Virgin Mary", title="Evening Prayer I")
-            story.append(box)
-            
-            story.append(Paragraph("O Lord open my lips...",stylePsalm))
-            
-            box = DayHeader(date="Thirty-Second Sunday in Ordinary Time")
-            story.append(box)
-            
-            story.append(Paragraph("O Lord open my lips...",stylePsalm))
-            
-            box = DayHeader(date="March 19", title="Solemnity of St. Joseph",level="S")
-            story.append(box)
-            
-            story.append(Paragraph("O Lord open my lips...",stylePsalm))
-            
-            box = DayHeader(date="Solemnity of Jesus Christ the King of the Universe")
-            story.append(box)
+                       
+            hour = HourHeader(hour = "Office of Readings")
+            story.append(hour)
+            story.append(Antiphon(antiphon = [("Ant.","Your word, O Lord is the lantern to light our way, alleluia."),
+                                                ("Advent:","New City of Zion, let your heart sing for joy; see how humbly your king comes to save you."),
+                                                ("Lent, 2nd Sunday:","Jesus took Peter, James and his brother John and let them up a high mountain. There he was transfigured before them."),
+                                                ("Lent Palm Sunday:","Day after day I sat teaching you in the temple and you did not lay hands on me. Now you come to scourge me and lead me to the cross."),
+                                                ("Easter, 6th Sunday:","The man of truth welcomes the light, alleluia.")
+                                                ]))
+            story.append(Psalm(verse = "Psalm 119:105-112", 
+                                 titles = ["XIV (Nun)","A Meditation on God's Law"], 
+                                 summary="This is my commandment: that you should love one another", 
+                                 summary_verse = "(John 15:12)", 
+                                 text="Your word is a lamp for my steps <br />and a light for my path.<br />I have sworn and have made up my mind <br />to obey your decrees.<br /><br />Lord, I am deeply afflicted: <br />by your word give me life.<br />Accept, Lord, the homage of my lips <br />and teach me your decrees.<br /><br />Though I carry my life in my hands, <br />I remember your law.<br />Though the wicked try to ensnare me <br />I do not stray from your precepts.<br /><br />Your will is my heritage for ever, <br />the joy of my heart.<br />I set myself to carry out your will <br />in fullness, for ever.<br /><br />Glory to the Father, and to the Son, <br />and to the Holy Spirit:<br />as it was in the beginning, is now, <br />and will be for ever. Amen."
+                                ))
+            for i in range (10):
+                story.append(Paragraph("<para color=red>hiiiiiii</para>",stylePsalm))
+                story.append(Paragraph("Your word is a lamp for my steps <br />and a light for my path.<br />I have sworn and have made up my mind <br />to obey your decrees.<br /><br />Lord, I am deeply afflicted: <br />by your word give me life.<br />Accept, Lord, the homage of my lips <br />and teach me your decrees.<br /><br />Though I carry my life in my hands, <br />I remember your law.<br />Though the wicked try to ensnare me <br />I do not stray from your precepts.<br /><br />Your will is my heritage for ever, <br />the joy of my heart.<br />I set myself to carry out your will <br />in fullness, for ever.<br /><br />Glory to the Father, and to the Son, <br />and to the Holy Spirit:<br />as it was in the beginning, is now, <br />and will be for ever. Amen."
+                                ,stylePsalm))                                    
+            story.append(Antiphon(antiphon = [("Ant.","Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."),
+                                                ("Advent:","Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."),
+                                                ("Lent, 2nd Sunday:","Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."),
+                                                ("Lent Palm Sunday:","Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."),
+                                                ("Easter, 6th Sunday:","Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.")
+                                                ]))
      # C6 = (114*mm,162*mm)
     doc = BaseDocTemplate('mydoc.pdf', pagesize=C6,
                             pageTemplates=[],
-                            showBoundary=0,
+                            showBoundary=1,
                             leftMargin=10*mm,
                             rightMargin=10*mm,
                             topMargin=10*mm,
