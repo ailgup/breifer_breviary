@@ -42,22 +42,26 @@ class DayHeader(Flowable):
         self.date = date
         self.title = title
         self.level = level
-        self.font_scaling_ratio = 1
+        
+        self.date_font_size = DATE_FONT_SIZE
+        self.level_font_size = LEVEL_FONT_SIZE
+        self.title_font_size = TITLE_FONT_SIZE
         
     #----------------------------------------------------------------------
     
-    def resize_date_to_fit(self):
-        print("stringWidth ",stringWidth(self.date,DATE_FONT,(DATE_FONT_SIZE*self.font_scaling_ratio))*mm)
-        print(90*mm)
-        while stringWidth(self.date,DATE_FONT,(DATE_FONT_SIZE*self.font_scaling_ratio)) > HEADER_WIDTH:
-            self.font_scaling_ratio=self.font_scaling_ratio*0.85
+    def resize_date_to_fit(self, text, font, font_size, width = HEADER_WIDTH, percentage_margin = 0.75):
+
+        while (stringWidth(text,font,font_size) > width * percentage_margin):
+            font_size = font_size - 1
+            
+        return font_size
         
     
     def calc_height(self):
         POINT_TO_MM = 1
         MARGIN_PERCENTALE = 1.5
         
-        total_height = (bool(self.date)*DATE_FONT_SIZE + bool(self.title)*TITLE_FONT_SIZE + bool(self.level)*LEVEL_FONT_SIZE) 
+        total_height = (bool(self.date)*self.date_font_size + bool(self.title)*self.title_font_size + bool(self.level)*self.level_font_size) 
         total_height = POINT_TO_MM * total_height
         total_height = MARGIN_PERCENTALE * total_height
         self.height = total_height
@@ -68,11 +72,11 @@ class DayHeader(Flowable):
         Draw the shape, text, etc
         """
         ## TODO resize font if too wide
-        
+        self.date_font_size = self.resize_date_to_fit(self.date,DATE_FONT,self.date_font_size)
         self.calc_height()
         
         #resize date if it is too long for container
-        self.resize_date_to_fit()
+        
         
         bracket_width = 5*mm
         
@@ -93,26 +97,26 @@ class DayHeader(Flowable):
         self.canv.line(self.x+self.width, self.y+self.height, self.x+self.width-bracket_width, self.y+self.height)
         
         #DATE STYLE
-        self.canv.setFont(DATE_FONT,DATE_FONT_SIZE * self.font_scaling_ratio)
+        self.canv.setFont(DATE_FONT,self.date_font_size)
         self.canv.setFillColor(DATE_FONT_COLOR)
         
-        self.canv.drawCentredString( self.width/2, self.y+self.height-DATE_FONT_SIZE, self.date.upper())
+        self.canv.drawCentredString( self.width/2, self.y+self.height-self.date_font_size, self.date.upper())
         
         #LEVEL STYLE
-        self.canv.setFont(LEVEL_FONT, LEVEL_FONT_SIZE)
+        self.canv.setFont(LEVEL_FONT, self.level_font_size)
         self.canv.setFillColor(LEVEL_FONT_COLOR)
         
         if(self.level=="S"):
-            self.canv.drawCentredString(self.width/2, self.y+self.height-DATE_FONT_SIZE-LEVEL_FONT_SIZE, "SOLEMNITY")
+            self.canv.drawCentredString(self.width/2, self.y+self.height-self.date_font_size-self.level_font_size, "SOLEMNITY")
         elif self.level == "F":
-            self.canv.drawCentredString(self.width/2, self.y+self.height-DATE_FONT_SIZE-LEVEL_FONT_SIZE, "FEAST")
+            self.canv.drawCentredString(self.width/2, self.y+self.height-self.date_font_size-self.level_font_size, "FEAST")
         elif self.level == "M":
-            self.canv.drawCentredString(self.width/2, self.y+self.height-DATE_FONT_SIZE-LEVEL_FONT_SIZE, "MEMORIAL")
+            self.canv.drawCentredString(self.width/2, self.y+self.height-self.date_font_size-self.level_font_size, "MEMORIAL")
         elif self.level == "m":
-            self.canv.drawCentredString(self.width/2, self.y+self.height-DATE_FONT_SIZE-LEVEL_FONT_SIZE, "OPTIONAL MEMORIAL")
+            self.canv.drawCentredString(self.width/2, self.y+self.height-self.date_font_size-self.level_font_size, "OPTIONAL MEMORIAL")
             
         #TITLE STYLE
         self.canv.setFont("MinionSub", 8)
         self.canv.setFillColor(black)
-        self.canv.drawCentredString(self.width/2, self.y+TITLE_FONT_SIZE, self.title)
+        self.canv.drawCentredString(self.width/2, self.y+self.title_font_size, self.title)
         
