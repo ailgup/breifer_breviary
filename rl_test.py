@@ -126,10 +126,10 @@ def main():
     for i in range (40):
        
         if i%20==0:
-            box = DayHeader(date="March 19", title="St. Joseph",level="S")
+            box = DayHeader(date="Sunday", title="Week II")
             story.append(box)
                        
-            hour = HourHeader(hour = "Office of Readings")
+            hour = HourHeader(hour = "Evening Prayer I")
             story.append(hour)
             story.append(Antiphon(antiphon = [("Ant.","Your word, O Lord is the lantern to light our way, alleluia."),
                                                 ("Advent:","New City of Zion, let your heart sing for joy; see how humbly your king comes to save you."),
@@ -137,16 +137,26 @@ def main():
                                                 ("Lent Palm Sunday:","Day after day I sat teaching you in the temple and you did not lay hands on me. Now you come to scourge me and lead me to the cross."),
                                                 ("Easter, 6th Sunday:","The man of truth welcomes the light, alleluia.")
                                                 ]))
-            story.append(Psalm(verse = "Psalm 119:105-112", 
-                                 titles = ["XIV (Nun)","A Meditation on God's Law"], 
-                                 summary="This is my commandment: that you should love one another", 
-                                 summary_verse = "(John 15:12)", 
-                                 text="Your word is a lamp for my steps <br />and a light for my path.<br />I have sworn and have made up my mind <br />to obey your decrees.<br /><br />Lord, I am deeply afflicted: <br />by your word give me life.<br />Accept, Lord, the homage of my lips <br />and teach me your decrees.<br /><br />Though I carry my life in my hands, <br />I remember your law.<br />Though the wicked try to ensnare me <br />I do not stray from your precepts.<br /><br />Your will is my heritage for ever, <br />the joy of my heart.<br />I set myself to carry out your will <br />in fullness, for ever.<br /><br />Glory to the Father, and to the Son, <br />and to the Holy Spirit:<br />as it was in the beginning, is now, <br />and will be for ever. Amen."
-                                ))
-            for i in range (10):
-                story.append(Paragraph("<para color=red>hiiiiiii</para>",stylePsalm))
-                story.append(Paragraph("Your word is a lamp for my steps <br />and a light for my path.<br />I have sworn and have made up my mind <br />to obey your decrees.<br /><br />Lord, I am deeply afflicted: <br />by your word give me life.<br />Accept, Lord, the homage of my lips <br />and teach me your decrees.<br /><br />Though I carry my life in my hands, <br />I remember your law.<br />Though the wicked try to ensnare me <br />I do not stray from your precepts.<br /><br />Your will is my heritage for ever, <br />the joy of my heart.<br />I set myself to carry out your will <br />in fullness, for ever.<br /><br />Glory to the Father, and to the Son, <br />and to the Holy Spirit:<br />as it was in the beginning, is now, <br />and will be for ever. Amen."
-                                ,stylePsalm))                                    
+            for i in range(10):
+                p=Psalm(verse = "Psalm 119:105-112", 
+                                     titles = ["XIV (Nun)","A Meditation on God's Law"], 
+                                     summary="This is my commandment: that you should love one another", 
+                                     summary_verse = "(John 15:12)", 
+                                     text="Your word is a lamp for my steps <br />and a light for my path.<br />I have sworn and have made up my mind <br />to obey your decrees.<br /><br />Lord, I am deeply afflicted: <br />by your word give me life.<br />Accept, Lord, the homage of my lips <br />and teach me your decrees.<br /><br />Though I carry my life in my hands, <br />I remember your law.<br />Though the wicked try to ensnare me <br />I do not stray from your precepts.<br /><br />Your will is my heritage for ever, <br />the joy of my heart.<br />I set myself to carry out your will <br />in fullness, for ever. Glory..."
+                                    )
+                psalm_split_correctly(p,story)  
+
+                p=Psalm(verse="Psalm 16",
+                        titles=["The Lord himself is my heritage"],
+                        summary = "The Father raised up Jesus, freeing him from the grip of death",
+                        summary_verse = "Acts 2:24",
+                        text='<p>Preserve me, God, I take refuge in you.<br />I say to you Lord "You are my God.<br />My happiness lies in you alone."<br /><br />You have put into my heart a marvelous love<br />for the faithful ones who dwell in your land.<br />Those who choose other gods increase their sorrows.<br />Never will I offer their offerings of blood.<br />Never will I take their name upon my lips.<br /><br />O Lord, it is you who are my portion and cup,<br />it is you yourself who are my prize.<br />The lot marked out for me is my delight,<br />welcome indeed the heritage that falls to me!<br /><br />I will bless the Lord who gives me counsel,<br />who even at night directs my heart.<br />I keep the Lord ever in my sight:<br />since he is at my right hand, I shall stand firm.<br /><br />And so my heart rejoices, my soul is glad;<br />even my body shall rest in safety.<br />For you will not leave my soul among the dead,<br />nor let your beloved know decay.<br /><br />You will show me the path of life,<br />the fullness of joy in your presence,<br />at your right hand happiness for ever. Glory...</p>'
+                        )
+                psalm_split_correctly(p,story)         
+                     
+
+
+                
             story.append(Antiphon(antiphon = [("Ant.","Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."),
                                                 ("Advent:","Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."),
                                                 ("Lent, 2nd Sunday:","Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."),
@@ -176,6 +186,11 @@ def main():
                        ])
     doc.build(story, canvasmaker = NumberedCanvas)
 
+def psalm_split_correctly(psalm, story):
+    # accepts a Psalm (obj) and a Story (obj) and adds paragraph-wise to keep stanzas together
+
+    for stanza in psalm.paragraphs:
+        story.append(stanza[2])
 def add_header(canvas,doc):
 
     # Page Number

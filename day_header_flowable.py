@@ -1,4 +1,4 @@
-from reportlab.platypus import BaseDocTemplate, Frame, NextPageTemplate, PageBreak, PageTemplate, Flowable
+from reportlab.platypus import BaseDocTemplate, Frame, NextPageTemplate, PageBreak, PageTemplate, Flowable, CondPageBreak
 
 from reportlab.lib.units import mm
 from reportlab.lib.colors import Color, black
@@ -260,9 +260,8 @@ class Antiphon(Flowable):
         current_y = self.y+self.height
         for i in range(len(self.antiphon)):
 
-            print(i)
             if i==0:
-                print("first")
+            
                 #self.canv.setFont(ANT_H1_FONT,ANT_H1_FONT_SIZE)
                 #self.canv.setFillColor(ANT_H1_FONT_COLOR)
                 #self.canv.drawString( self.x, current_y, self.antiphon[i][0])
@@ -327,6 +326,7 @@ class Psalm(Flowable):
             psalm_string += t+" -  "
         psalm_string+="</para>"
         P=Paragraph(psalm_string,PSALM_PARA_STYLE)
+        P.keepWithNext = True
         psalm_width = HEADER_WIDTH
         w,h = P.wrap(HEADER_WIDTH, 99999)
         self.height = self.height+h
@@ -335,18 +335,31 @@ class Psalm(Flowable):
         #summary string
         psalm_string = "<para align=right fontsize=6><i>"+self.summary+"</i>"+"  "+self.summary_verse+"<br /></para>"
         P=Paragraph(psalm_string,PSALM_PARA_STYLE)
+        
+        P.keepWithNext = True #does not always keep together if near end of page
         psalm_width = HEADER_WIDTH
         w,h = P.wrap(HEADER_WIDTH, 99999)
         self.height = self.height+h
         paragraphs.append((w,h,P))
 
         #psalm itself
-        psalm_string = "<para>"+self.text+"</para>"
-        P=Paragraph(psalm_string,PSALM_PARA_STYLE)
-        psalm_width = HEADER_WIDTH
-        w,h = P.wrap(HEADER_WIDTH, 99999)
-        self.height = self.height+h
-        paragraphs.append((w,h,P))
+        psalm_stanzas = self.text.split("<br /><br />")
+        paragraph_staging=[]
+        for stanza in psalm_stanzas:
+            psalm_string = "<para>"+stanza+"<br /><br /></para>"
+            P=Paragraph(psalm_string,PSALM_PARA_STYLE)
+            psalm_width = HEADER_WIDTH
+            w,h = P.wrap(HEADER_WIDTH, 99999)
+            self.height = self.height+h
+            paragraph_staging.append((w,h,P))
+        for p in paragraph_staging:
+            
+            stanza_height=0
+
+            stanza_height = p[1]
+            paragraphs.append((0,0,CondPageBreak(stanza_height)))
+            paragraphs.append(p)
+            print(stanza_height)
         
         
         return paragraphs
@@ -358,6 +371,7 @@ class Psalm(Flowable):
         current_y = self.y+self.height
 
         for i in range(len(self.paragraphs)):
+            
             self.paragraphs[i][2].drawOn(self.canv,self.x,current_y-self.paragraphs[i][1] +ANT_2_FONT_SIZE )
             current_y = current_y - self.paragraphs[i][1]
             
