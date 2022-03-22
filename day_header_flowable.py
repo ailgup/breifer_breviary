@@ -1,4 +1,4 @@
-from reportlab.platypus import BaseDocTemplate, Frame, NextPageTemplate, PageBreak, PageTemplate, Flowable, CondPageBreak
+from reportlab.platypus import BaseDocTemplate, Frame, NextPageTemplate, PageBreak, PageTemplate, Flowable, CondPageBreak, HRFlowable, Table
 
 from reportlab.lib.units import mm
 from reportlab.lib.colors import Color, black
@@ -359,7 +359,6 @@ class Psalm(Flowable):
             stanza_height = p[1]
             paragraphs.append((0,0,CondPageBreak(stanza_height)))
             paragraphs.append(p)
-            print(stanza_height)
         
         
         return paragraphs
@@ -375,4 +374,86 @@ class Psalm(Flowable):
             self.paragraphs[i][2].drawOn(self.canv,self.x,current_y-self.paragraphs[i][1] +ANT_2_FONT_SIZE )
             current_y = current_y - self.paragraphs[i][1]
             
+class Reading(Flowable):
+    """
+    Reading                   Gen 1:1
+    ---------------------------------
+        In the begining....
+    
+    """
+    
+
+    #----------------------------------------------------------------------
+    def __init__(self, x=0, y=0, width=HEADER_WIDTH, height=None, book="",verse = "",text=""):
+        Flowable.__init__(self)
+        self.x = x
+        self.y = y
+        self.width = width
+        
+        self.verse = verse
+        self.book = book
+        self.text = text
+        
+        if not height:
+            self.height = 0
+        else:
+            self.height = height
             
+        self.paragraphs = self.build_paragraphs()
+        
+        
+    def build_paragraphs(self):
+        from MagnificatTextStyle import PSALM_PARA_STYLE
+        from reportlab.platypus import Paragraph
+
+        paragraphs = []
+
+        #title
+        title_1 = "<para color='#D63254'>READING</para>"
+        title_2 = "<para color='#D63254' align='right'>"+self.book+" "+self.verse+"</para>"
+        
+        P1=Paragraph(title_1,PSALM_PARA_STYLE)
+        P2=Paragraph(title_2,PSALM_PARA_STYLE)
+        
+        psalm_width = HEADER_WIDTH
+        w,h = P1.wrap(HEADER_WIDTH, 99999)
+        w,h = P2.wrap(HEADER_WIDTH, 99999)
+        
+        T = Table([[P1,P2]])
+        
+        self.height = self.height+h
+        paragraphs.append((w,h,T))
+        
+        #horozontal line
+
+        line = HRFlowable(
+            color=MAGNIFICAT_RED,
+            thickness=1,
+            width=HEADER_WIDTH,
+            spaceBefore=1,
+            spaceAfter=1
+        )
+        paragraphs.append((self.width,3,line))
+        #summary string
+        reading_string = "<para align=left ><font size=20>"+self.text[0]+"</font>"+self.text[1:-1]+"<br /></para>"
+        P=Paragraph(reading_string,PSALM_PARA_STYLE)
+        
+        w,h = P.wrap(HEADER_WIDTH, 99999)
+        self.height = self.height+h
+        paragraphs.append((w,h,P))
+
+       
+        return paragraphs
+        
+    def draw(self):
+        """
+        Draw the shape, text, etc
+        """
+        current_y = self.y+self.height
+
+        for i in range(len(self.paragraphs)):
+            
+            self.paragraphs[i][2].drawOn(self.canv,self.x,current_y-self.paragraphs[i][1] +ANT_2_FONT_SIZE )
+            current_y = current_y - self.paragraphs[i][1]
+            
+                        
