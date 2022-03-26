@@ -237,17 +237,18 @@ class Antiphon(Flowable):
     def build_paragraphs(self):
         from MagnificatTextStyle import ANTIPHON_PARA_STYLE
         from reportlab.platypus import Paragraph
+        from reportlab.lib.styles import ParagraphStyle
 
         paragraphs = []
         for a in self.antiphon:
             
             if self.antiphon.index(a) == 0:
                 antiphon_string = "<font color='#D63254'>"+a[0]+'</font> '+a[1]
-                P=Paragraph(antiphon_string,ANTIPHON_PARA_STYLE)
+                P=Paragraph(antiphon_string,ParagraphStyle(name='Psalm',fontName = 'Minion',leading=10,textColor = black, fontSize=8))
                 ant_width = HEADER_WIDTH
             else:
                 antiphon_string = "<para leading=7 size=6> <font color='#D63254'>"+a[0]+"</font> "+a[1]+"</para>"
-                P=Paragraph(antiphon_string,ANTIPHON_PARA_STYLE)
+                P=Paragraph(antiphon_string,ParagraphStyle(name='Psalm',fontName = 'Minion',leading=10,textColor = black, fontSize=8))
                 ant_width = HEADER_WIDTH - ANT_H2_INDENT
             w,h = P.wrap(HEADER_WIDTH, 99999)
             self.height = self.height+h
@@ -317,15 +318,24 @@ class Psalm(Flowable):
     def build_paragraphs(self):
         from MagnificatTextStyle import PSALM_PARA_STYLE
         from reportlab.platypus import Paragraph
-
+        from reportlab.lib.styles import ParagraphStyle
         paragraphs = []
 
         #title
-        psalm_string = "<para align='center' color='#D63254'>"+self.verse+"<br />"
+        psalm_string = "<para align='center'><b>"+self.verse+"</b></para>"
+        P=Paragraph(psalm_string,ParagraphStyle(name='Psalm',fontName = 'Minion',leading=10,textColor = MAGNIFICAT_RED, fontSize=9))
+        P.keepWithNext = True
+        psalm_width = HEADER_WIDTH
+        w,h = P.wrap(HEADER_WIDTH, 99999)
+        self.height = self.height+h
+        paragraphs.append((w,h,P))
+        
+        psalm_string = "<para align='center'>"
         for t in self.titles:
             psalm_string += t+" -  "
+        psalm_string = psalm_string[:-3] #remove trailing dash
         psalm_string+="</para>"
-        P=Paragraph(psalm_string,PSALM_PARA_STYLE)
+        P=Paragraph(psalm_string,ParagraphStyle(name='Psalm',fontName = 'Minion',leading=10,textColor = MAGNIFICAT_RED, fontSize=8))
         P.keepWithNext = True
         psalm_width = HEADER_WIDTH
         w,h = P.wrap(HEADER_WIDTH, 99999)
@@ -347,7 +357,7 @@ class Psalm(Flowable):
         paragraph_staging=[]
         for stanza in psalm_stanzas:
             psalm_string = "<para>"+stanza+"<br /><br /></para>"
-            P=Paragraph(psalm_string,PSALM_PARA_STYLE)
+            P=Paragraph(psalm_string,ParagraphStyle(name='Psalm',fontName = 'Minion_med',leading=7,textColor = black, fontSize=8))
             psalm_width = HEADER_WIDTH
             w,h = P.wrap(HEADER_WIDTH, 99999)
             self.height = self.height+h
@@ -404,24 +414,33 @@ class Reading(Flowable):
         
     def build_paragraphs(self):
         from MagnificatTextStyle import PSALM_PARA_STYLE
-        from reportlab.platypus import Paragraph
+        from reportlab.platypus import Paragraph, TableStyle
 
+        from reportlab.lib.styles import ParagraphStyle
+        
         paragraphs = []
 
         #title
-        title_1 = "<para color='#D63254'>READING</para>"
-        title_2 = "<para color='#D63254' align='right'>"+self.book+" "+self.verse+"</para>"
+        title_1 = "<para><b>READING</b></para>"
+        title_2 = "<para align=right>"+self.book+" "+self.verse+"</para>"
         
-        P1=Paragraph(title_1,PSALM_PARA_STYLE)
-        P2=Paragraph(title_2,PSALM_PARA_STYLE)
+        P1=Paragraph(title_1,ParagraphStyle(name='Psalm',fontName = 'Minion',leading=10,textColor = MAGNIFICAT_RED, fontSize=10))
+        P2=Paragraph(title_2,ParagraphStyle(name='Psalm',fontName = 'Minion',leading=8,textColor = MAGNIFICAT_RED, fontSize=8))
         
         psalm_width = HEADER_WIDTH
         w,h = P1.wrap(HEADER_WIDTH, 99999)
         w,h = P2.wrap(HEADER_WIDTH, 99999)
         
         T = Table([[P1,P2]])
+        T.setStyle(TableStyle([
+        ('LEFTPADDING', (0,0), (-1,-1), 0),
+        ('RIGHTPADDING', (0,0), (-1,-1), 0),
+        ('TOPPADDING', (0,0), (-1,-1), 0),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 0)]))
         
-        self.height = self.height+h
+        w,h = T.wrap(HEADER_WIDTH,999999)
+        self.height = self.height + h
+        print("h1:",self.height)
         paragraphs.append((w,h,T))
         
         #horozontal line
@@ -431,16 +450,55 @@ class Reading(Flowable):
             thickness=1,
             width=HEADER_WIDTH,
             spaceBefore=1,
-            spaceAfter=1
+            spaceAfter=0
         )
+        w,h = line.wrap(HEADER_WIDTH,999999)
+        self.height = self.height + h
+        print("h2:",self.height)
         paragraphs.append((self.width,3,line))
         #summary string
-        reading_string = "<para align=left ><font size=20>"+self.text[0]+"</font>"+self.text[1:-1]+"<br /></para>"
-        P=Paragraph(reading_string,PSALM_PARA_STYLE)
         
+        #dropcap
+        reading_string = "<para align=right >"+self.text[0]+"</para>"
+        P=Paragraph(reading_string,ParagraphStyle(name='Psalm',fontName = 'Minion',leading=20,textColor = MAGNIFICAT_RED, fontSize=20))
         w,h = P.wrap(HEADER_WIDTH, 99999)
-        self.height = self.height+h
-        paragraphs.append((w,h,P))
+        
+        # first two lines
+        table_width = HEADER_WIDTH /2 - 1
+        FONT_SIZE=8
+        para_lines=999
+        P2 = None
+        # create two line paragraph
+        substring = self.text[1:-1]
+        while para_lines >  (FONT_SIZE) *2 :
+            substring = substring.rsplit(' ', 1)[0]
+            reading_string = "<para align=left >"+substring+"</para>"
+            P2=Paragraph(reading_string,ParagraphStyle(name='Psalm',fontName = 'Minion',leading=8,textColor =black, fontSize=FONT_SIZE))
+            w,h = P2.wrap(table_width, 99999)
+            para_lines = h
+            
+        
+        #remainder
+        reading_string = "<para align=left >"+self.text[len(substring)+1:-1]+"<br /></para>"
+        P3=Paragraph(reading_string,ParagraphStyle(name='Psalm',fontName = 'Minion',leading=8,textColor =black, fontSize=FONT_SIZE))
+        w,h = P3.wrap(HEADER_WIDTH, 99999)
+        
+        
+        T2=Table([[P,P2],[P3,0]])
+        #T=Table([["1","2"],["3","4"]])
+        T2.setStyle(TableStyle([('SPAN', (0, 1), (1, 1)),
+        #('GRID', (0, 0), (-1, -1), 0.25, black),
+        ('LEFTPADDING', (0,0), (-1,-1), 0),
+        ('RIGHTPADDING', (0,0), (-1,-1), 0),
+        ('RIGHTPADDING', (0,0), (0,0), 3),
+        ('TOPPADDING', (0,0), (-1,-1), 0),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 0),
+        ('BOTTOMPADDING', (0,1), (1,1), 5)]))
+        
+        w,h = T2.wrap(HEADER_WIDTH,999999)
+        self.height+=h
+        print("h3:",self.height)
+        paragraphs.append((w,h,T2))
 
        
         return paragraphs
@@ -456,4 +514,83 @@ class Reading(Flowable):
             self.paragraphs[i][2].drawOn(self.canv,self.x,current_y-self.paragraphs[i][1] +ANT_2_FONT_SIZE )
             current_y = current_y - self.paragraphs[i][1]
             
-                        
+class Intercessions(Flowable):
+    """
+    Reading                   Gen 1:1
+    ---------------------------------
+        In the begining....
+    
+    """
+    
+
+    #----------------------------------------------------------------------
+    def __init__(self, x=0, y=0, width=HEADER_WIDTH, height=None, first="",response="",intercessions = []):
+        Flowable.__init__(self)
+        self.x = x
+        self.y = y
+        self.width = width
+        
+        self.first=first
+        self.intercessions = intercessions
+        self.response = response
+        
+        if not height:
+            self.height = 0
+        else:
+            self.height = height
+            
+        self.paragraphs = self.build_paragraphs()
+        
+        
+    def build_paragraphs(self):
+    
+        from reportlab.platypus import Paragraph, TableStyle
+
+        from reportlab.lib.styles import ParagraphStyle
+        
+        paragraphs = []
+
+        #title
+        title_1 = "<para><b><i>Intercessions</i></b></para>" 
+        P1=Paragraph(title_1,ParagraphStyle(name='Psalm',fontName = 'Minion',leading=10,textColor = MAGNIFICAT_RED, fontSize=10))
+        w,h = P1.wrap(HEADER_WIDTH, 99999)        
+        self.height = self.height + h
+        paragraphs.append((w,h,P1))
+        
+        #first
+        title_1 = "<para>"+self.first+"</para>" 
+        P1=Paragraph(title_1,ParagraphStyle(name='Psalm',fontName = 'Minion_med',leading=8,textColor = black, fontSize=8))
+        w,h = P1.wrap(HEADER_WIDTH, 99999)        
+        self.height = self.height + h
+        paragraphs.append((w,h,P1))
+            
+        #resp
+        title_1 = "<para><i>"+self.response+"</i></para>" 
+        P1=Paragraph(title_1,ParagraphStyle(name='Psalm',fontName = 'Minion',leading=8,textColor = black, fontSize=8))
+        w,h = P1.wrap(HEADER_WIDTH, 99999)        
+        self.height = self.height + h
+        paragraphs.append((w,h,P1))
+        
+        for i in self.intercessions:
+            title_1 = "<para>"+i[0]+"<br /> - "+i[1]+"</para>" 
+            P1=Paragraph(title_1,ParagraphStyle(name='Psalm',fontName = 'Minion_med',leading=8,textColor = black, fontSize=8))
+            w,h = P1.wrap(HEADER_WIDTH, 99999)        
+            self.height = self.height + h
+            paragraphs.append((w,h,P1))
+        
+
+
+       
+        return paragraphs
+        
+    def draw(self):
+        """
+        Draw the shape, text, etc
+        """
+        current_y = self.y+self.height
+
+        for i in range(len(self.paragraphs)):
+            
+            self.paragraphs[i][2].drawOn(self.canv,self.x,current_y-self.paragraphs[i][1] +ANT_2_FONT_SIZE )
+            current_y = current_y - self.paragraphs[i][1]
+                                    

@@ -8,14 +8,14 @@ from reportlab.platypus import Paragraph, SimpleDocTemplate
 import reportlab.rl_config
 reportlab.rl_config.warnOnMissingFontGlyphs = 0
 from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
+
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import mm
 
 from reportlab.lib.colors import Color
 
 #homemade
-from day_header_flowable import DayHeader, HourHeader, Antiphon, Psalm, Reading
+from day_header_flowable import DayHeader, HourHeader, Antiphon, Psalm, Reading, Intercessions
 
 
 
@@ -24,15 +24,29 @@ MAGNIFICAT_RED = Color( 214/255 ,50/255, 84/255, alpha=1)
 
 
 def main():
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
+    from reportlab.pdfbase.pdfmetrics import registerFontFamily
+ 
+    
+    
     #used for titles
-    pdfmetrics.registerFont(TTFont('Arno', 'ArnoPro-Bold.ttf'))
+    pdfmetrics.registerFont(TTFont('Arno', 'fonts/ArnoPro-Bold.ttf'))
     #used for psalms
-    pdfmetrics.registerFont(TTFont('Minion', 'Minion Pro Medium Cond Caption.ttf'))
+    pdfmetrics.registerFont(TTFont('Minion_med', 'Minion Pro Medium Cond Caption.ttf'))
+    pdfmetrics.registerFont(TTFont('Minion', 'fonts/Minion Regular.ttf'))
+    pdfmetrics.registerFont(TTFont('Minion_b', 'fonts/Minion Bold.ttf'))
+    pdfmetrics.registerFont(TTFont('Minion_b_i', 'fonts/Minion Bold Italic.ttf'))
+    pdfmetrics.registerFont(TTFont('Minion_i', 'fonts/Minion Italic.ttf'))
+    
     #used for day subheadings
-    pdfmetrics.registerFont(TTFont('MinionSub', 'MinionPro-Subh.ttf'))
+    pdfmetrics.registerFont(TTFont('MinionSub', 'fonts/MinionPro-Subh.ttf'))
     #used for hour headings
-    pdfmetrics.registerFont(TTFont('MinionSub_bold', 'Minion Pro Bold Subhead.ttf'))
+    pdfmetrics.registerFont(TTFont('MinionSub_bold', 'fonts/Minion Pro Bold Subhead.ttf'))
 
+    registerFontFamily('Minion', normal='Minion', bold='Minion_b', italic='Minion_i', boldItalic='Minion_b_i')
+    
+    
     styles = getSampleStyleSheet()
 
     styleHeading = ParagraphStyle(name='Heading',
@@ -166,6 +180,12 @@ def main():
             r=Reading(book="Colossians",verse="1:2b-6a",text="May God our Father give you grace and peace. We always give thanks to God, the Father of our Lord Jesus Christ, in our prayers for you because we have heard of your faith in Christ Jesus and the love you bear toward all the saints - moved as you are by the hope held in store for you in heaven. You heard of this hope through the message of truth, the gospel, which has come to you, has borne fruit, and has continued to grow in your midst, as it has everywhere in the world.")
             psalm_split_correctly(r,story)
                 
+            i = Intercessions(first = "God aids and protects the people he has chosen for his inheritance.  Let us give thanks to him and proclaim his goodness:",
+                                response = "Lord, we trust in you.",
+                                intercessions = [["We pray for N., our Pope, and N., our bishop,","protect them and in your goodness make them holy."],["May the sick feel their companionship with the suffering Christ,","and know that they will enjoy his eternal consolation."],["In your goodness have compassion on the homeless,","help them to find proper housing."],["In your goodness give and preserve the fruits of the earth,","so that each day there may be bread enough for all."],["Lord, you attend the dying with great mercy,","grant them an eternal dwelling."]]
+                                )
+            psalm_split_correctly(i,story)                    
+                                
             story.append(Antiphon(antiphon = [("Ant.","Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."),
                                                 ("Advent:","Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."),
                                                 ("Lent, 2nd Sunday:","Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."),
