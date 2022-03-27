@@ -21,7 +21,7 @@ from day_header_flowable import DayHeader, HourHeader, Antiphon, Psalm, Reading,
 
 MAGNIFICAT_RED = Color( 214/255 ,50/255, 84/255, alpha=1)
 
-
+antiphon_on_current_page = False
 
 def main():
     from reportlab.pdfbase import pdfmetrics
@@ -45,95 +45,7 @@ def main():
     pdfmetrics.registerFont(TTFont('MinionSub_bold', 'fonts/Minion Pro Bold Subhead.ttf'))
 
     registerFontFamily('Minion', normal='Minion', bold='Minion_b', italic='Minion_i', boldItalic='Minion_b_i')
-    
-    
-    styles = getSampleStyleSheet()
 
-    styleHeading = ParagraphStyle(name='Heading',
-                                parent=styles['Normal'],
-                                fontName = 'Arno')
-    stylePsalm = ParagraphStyle(name='Psalm',
-                                parent=styles['Normal'],
-                                fontName = 'Minion',
-                                alignment = 0,
-                                allowOrphans = 0,
-                                allowWidows = 1,
-                                backColor = None,
-                                borderColor = None,
-                                borderPadding = 0,
-                                borderRadius = None,
-                                borderWidth = 0,
-                                bulletAnchor = None,
-                                bulletFontName = None,
-                                bulletFontSize = 10,
-                                bulletIndent = 0,
-                                embeddedHyphenation = 0,
-                                endDots = None,
-                                firstLineIndent = 0,
-                                fontSize = 10,
-                                hyphenationLang = None,
-                                justifyBreaks = 0,
-                                justifyLastLine = 0,
-                                leading = 12,
-                                leftIndent = 0,
-                                linkUnderline = 0,
-                                rightIndent = 0,
-                                spaceAfter = 0,
-                                spaceBefore = 0,
-                                spaceShrinkage = 0.05,
-                                splitLongWords = 1,
-                                strikeGap = 1,
-                                strikeOffset = 0.25*mm,
-                                strikeWidth =None,
-                                textColor = Color(0,0,0,1),
-                                textTransform = None,
-                                underlineGap = 1,
-                                underlineOffset = -0.125*mm,
-                                underlineWidth =None,
-                                uriWasteReduce = 0,
-                                wordWrap = None
-                                )
-    styleDayTitle = ParagraphStyle(name='DayTitle',
-                                parent=styles['Normal'],
-                                fontName = 'Minion',
-                                alignment = 0,
-                                allowOrphans = 0,
-                                allowWidows = 1,
-                                backColor = None,
-                                borderColor = None,
-                                borderPadding = 0,
-                                borderRadius = None,
-                                borderWidth = 0,
-                                bulletAnchor = None,
-                                bulletFontName = None,
-                                bulletFontSize = 10,
-                                bulletIndent = 0,
-                                embeddedHyphenation = 0,
-                                endDots = None,
-                                firstLineIndent = 0,
-                                fontSize = 20,
-                                hyphenationLang = None,
-                                justifyBreaks = 0,
-                                justifyLastLine = 0,
-                                leading = 12,
-                                leftIndent = 0,
-                                linkUnderline = 0,
-                                rightIndent = 0,
-                                spaceAfter = 0,
-                                spaceBefore = 0,
-                                spaceShrinkage = 0.05,
-                                splitLongWords = 1,
-                                strikeGap = 1,
-                                strikeOffset = 0.25*mm,
-                                strikeWidth =None,
-                                textColor = Color(0,0,0,1),
-                                textTransform = None,
-                                underlineGap = 1,
-                                underlineOffset = -0.125*mm,
-                                underlineWidth =None,
-                                uriWasteReduce = 0,
-                                wordWrap = None
-                                )
     story = []
     #add some flowables
     
@@ -145,13 +57,13 @@ def main():
                        
             hour = HourHeader(hour = "Evening Prayer I")
             story.append(hour)
-            story.append(Antiphon(antiphon = [("Ant.","Your word, O Lord is the lantern to light our way, alleluia."),
+            a = Antiphon(antiphon = [("Ant.","Your word, O Lord is the lantern to light our way, alleluia."),
                                                 ("Advent:","New City of Zion, let your heart sing for joy; see how humbly your king comes to save you."),
                                                 ("Lent, 2nd Sunday:","Jesus took Peter, James and his brother John and let them up a high mountain. There he was transfigured before them."),
                                                 ("Lent Palm Sunday:","Day after day I sat teaching you in the temple and you did not lay hands on me. Now you come to scourge me and lead me to the cross."),
                                                 ("Easter, 6th Sunday:","The man of truth welcomes the light, alleluia.")
-                                                ]))
-
+                                                ])
+            psalm_split_correctly(a,story) 
             p=Psalm(verse = "Psalm 119:105-112", 
                                  titles = ["XIV (Nun)","A Meditation on God's Law"], 
                                  summary="This is my commandment: that you should love one another", 
@@ -184,14 +96,16 @@ def main():
                                 response = "Lord, we trust in you.",
                                 intercessions = [["We pray for N., our Pope, and N., our bishop,","protect them and in your goodness make them holy."],["May the sick feel their companionship with the suffering Christ,","and know that they will enjoy his eternal consolation."],["In your goodness have compassion on the homeless,","help them to find proper housing."],["In your goodness give and preserve the fruits of the earth,","so that each day there may be bread enough for all."],["Lord, you attend the dying with great mercy,","grant them an eternal dwelling."]]
                                 )
-            psalm_split_correctly(i,story)                    
-                                
-            story.append(Antiphon(antiphon = [("Ant.","Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."),
+            psalm_split_correctly(i,story)   
+           
+           
+            a = Antiphon(antiphon = [("Ant.","Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."),
                                                 ("Advent:","Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."),
                                                 ("Lent, 2nd Sunday:","Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."),
                                                 ("Lent Palm Sunday:","Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."),
                                                 ("Easter, 6th Sunday:","Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.")
-                                                ]))
+                                                ])
+            psalm_split_correctly(a,story)
      # C6 = (114*mm,162*mm)
     doc = BaseDocTemplate('mydoc.pdf', pagesize=C6,
                             pageTemplates=[],

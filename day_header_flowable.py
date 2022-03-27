@@ -1,4 +1,4 @@
-from reportlab.platypus import BaseDocTemplate, Frame, NextPageTemplate, PageBreak, PageTemplate, Flowable, CondPageBreak, HRFlowable, Table
+from reportlab.platypus import BaseDocTemplate, Frame, NextPageTemplate, PageBreak, PageTemplate, Flowable, CondPageBreak, HRFlowable, Table, Spacer
 
 from reportlab.lib.units import mm
 from reportlab.lib.colors import Color, black
@@ -203,7 +203,7 @@ ANT_H2_FONT_COLOR = MAGNIFICAT_RED
 ANT_H2_INDENT = 4*mm
 # this is the text of the antiphon itself
 ANT_2_FONT = "MinionSub_bold"
-ANT_2_FONT_SIZE = 7
+ANT_2_FONT_SIZE = 0
 ANT_2_FONT_COLOR = black
 class Antiphon(Flowable):
 
@@ -235,7 +235,6 @@ class Antiphon(Flowable):
         
         
     def build_paragraphs(self):
-        from MagnificatTextStyle import ANTIPHON_PARA_STYLE
         from reportlab.platypus import Paragraph
         from reportlab.lib.styles import ParagraphStyle
 
@@ -243,41 +242,32 @@ class Antiphon(Flowable):
         for a in self.antiphon:
             
             if self.antiphon.index(a) == 0:
-                antiphon_string = "<font color='#D63254'>"+a[0]+'</font> '+a[1]
+                antiphon_string = "<para><font color='#D63254'>"+a[0]+'</font> '+a[1]+"</para>"
                 P=Paragraph(antiphon_string,ParagraphStyle(name='Psalm',fontName = 'Minion',leading=10,textColor = black, fontSize=8))
-                ant_width = HEADER_WIDTH
+
             else:
-                antiphon_string = "<para leading=7 size=6> <font color='#D63254'>"+a[0]+"</font> "+a[1]+"</para>"
-                P=Paragraph(antiphon_string,ParagraphStyle(name='Psalm',fontName = 'Minion',leading=10,textColor = black, fontSize=8))
-                ant_width = HEADER_WIDTH - ANT_H2_INDENT
+                antiphon_string = "<para leftIndent='15' firstLineIndent='-5'> <font color='#D63254'>"+a[0]+"</font> "+a[1]+"</para>"
+                P=Paragraph(antiphon_string,ParagraphStyle(name='Psalm',fontName = 'Minion',leading=7,textColor = black, fontSize=6))
+
             w,h = P.wrap(HEADER_WIDTH, 99999)
             self.height = self.height+h
             paragraphs.append((w,h,P))
+            
+        S = Spacer(HEADER_WIDTH,5)
+        w,h = S.wrap(HEADER_WIDTH, 99999)
+        paragraphs.append((w,h,S))
+        self.height +=h
         return paragraphs
     def draw(self):
         """
         Draw the shape, text, etc
         """
         current_y = self.y+self.height
-        for i in range(len(self.antiphon)):
 
-            if i==0:
+        for i in range(len(self.paragraphs)):
             
-                #self.canv.setFont(ANT_H1_FONT,ANT_H1_FONT_SIZE)
-                #self.canv.setFillColor(ANT_H1_FONT_COLOR)
-                #self.canv.drawString( self.x, current_y, self.antiphon[i][0])
-                
-                
-                self.paragraphs[i][2].drawOn(self.canv,self.x,current_y-self.paragraphs[i][1] +ANT_1_FONT_SIZE )
-                current_y = current_y - self.paragraphs[i][1]
-                
-            else:
-                #self.canv.setFont(ANT_H2_FONT,ANT_H2_FONT_SIZE)
-                #self.canv.setFillColor(ANT_H2_FONT_COLOR)
-                #self.canv.drawString( self.x + ANT_H2_INDENT, current_y, self.antiphon[i][0])
-                ant_width = stringWidth(self.antiphon[i][0],ANT_H2_FONT,ANT_H2_FONT_SIZE)
-                self.paragraphs[i][2].drawOn(self.canv,self.x+ANT_H2_INDENT,current_y-self.paragraphs[i][1] +ANT_2_FONT_SIZE )
-                current_y = current_y - self.paragraphs[i][1]
+            self.paragraphs[i][2].drawOn(self.canv,self.x,current_y-self.paragraphs[i][1] )
+            current_y = current_y - self.paragraphs[i][1]
                 
                
                 
@@ -381,7 +371,7 @@ class Psalm(Flowable):
 
         for i in range(len(self.paragraphs)):
             
-            self.paragraphs[i][2].drawOn(self.canv,self.x,current_y-self.paragraphs[i][1] +ANT_2_FONT_SIZE )
+            self.paragraphs[i][2].drawOn(self.canv,self.x,current_y-self.paragraphs[i][1] )
             current_y = current_y - self.paragraphs[i][1]
             
 class Reading(Flowable):
@@ -511,7 +501,7 @@ class Reading(Flowable):
 
         for i in range(len(self.paragraphs)):
             
-            self.paragraphs[i][2].drawOn(self.canv,self.x,current_y-self.paragraphs[i][1] +ANT_2_FONT_SIZE )
+            self.paragraphs[i][2].drawOn(self.canv,self.x,current_y-self.paragraphs[i][1] )
             current_y = current_y - self.paragraphs[i][1]
             
 class Intercessions(Flowable):
@@ -544,7 +534,7 @@ class Intercessions(Flowable):
         
     def build_paragraphs(self):
     
-        from reportlab.platypus import Paragraph, TableStyle
+        from reportlab.platypus import Paragraph, TableStyle, Spacer
 
         from reportlab.lib.styles import ParagraphStyle
         
@@ -558,27 +548,40 @@ class Intercessions(Flowable):
         paragraphs.append((w,h,P1))
         
         #first
-        title_1 = "<para>"+self.first+"</para>" 
+        title_1 = "<para leftIndent='5' firstLineIndent='-5'>"+self.first+"</para>" 
         P1=Paragraph(title_1,ParagraphStyle(name='Psalm',fontName = 'Minion_med',leading=8,textColor = black, fontSize=8))
         w,h = P1.wrap(HEADER_WIDTH, 99999)        
         self.height = self.height + h
         paragraphs.append((w,h,P1))
             
         #resp
-        title_1 = "<para><i>"+self.response+"</i></para>" 
+        title_1 = "<para leftIndent='15' firstLineIndent='-5'><i>"+self.response+"</i></para>" 
         P1=Paragraph(title_1,ParagraphStyle(name='Psalm',fontName = 'Minion',leading=8,textColor = black, fontSize=8))
         w,h = P1.wrap(HEADER_WIDTH, 99999)        
         self.height = self.height + h
         paragraphs.append((w,h,P1))
         
+        S = Spacer(HEADER_WIDTH,2)
+        w,h = S.wrap(HEADER_WIDTH, 99999)
+        paragraphs.append((w,h,S))
+        self.height +=h
+        
         for i in self.intercessions:
-            title_1 = "<para>"+i[0]+"<br /> - "+i[1]+"</para>" 
+            title_1 = "<para leftIndent='5' firstLineIndent='-5'>"+i[0]+"<br /><font color='#D63254'> - </font>"+i[1]+"</para>" 
             P1=Paragraph(title_1,ParagraphStyle(name='Psalm',fontName = 'Minion_med',leading=8,textColor = black, fontSize=8))
             w,h = P1.wrap(HEADER_WIDTH, 99999)        
             self.height = self.height + h
             paragraphs.append((w,h,P1))
+            
+            S = Spacer(HEADER_WIDTH,2)
+            w,h = S.wrap(HEADER_WIDTH, 99999)
+            paragraphs.append((w,h,S))
+            self.height +=h
         
-
+        S = Spacer(HEADER_WIDTH,5)
+        w,h = S.wrap(HEADER_WIDTH, 99999)
+        paragraphs.append((w,h,S))
+        self.height +=h
 
        
         return paragraphs
@@ -591,6 +594,6 @@ class Intercessions(Flowable):
 
         for i in range(len(self.paragraphs)):
             
-            self.paragraphs[i][2].drawOn(self.canv,self.x,current_y-self.paragraphs[i][1] +ANT_2_FONT_SIZE )
+            self.paragraphs[i][2].drawOn(self.canv,self.x,current_y-self.paragraphs[i][1] )
             current_y = current_y - self.paragraphs[i][1]
                                     
