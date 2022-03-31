@@ -207,26 +207,55 @@ class HourHeader(BreviarySection):
         self.canv.drawCentredString(self.width / 2, self.y + self.height - self.hour_font_size, self.hour)
 
 
-# H1 is the first header, should there be multiple antiphons for the psalm, eg. Easter, Christmas...
-ANT_H1_FONT = "MinionSub_bold"
-ANT_H1_FONT_SIZE = 8
-ANT_H1_FONT_COLOR = MAGNIFICAT_RED
-# this is the text of the antiphon itself
-ANT_1_FONT = "MinionSub_bold"
-ANT_1_FONT_SIZE = 8
-ANT_1_FONT_COLOR = black
-
-# H2 is the subsequent headers, should there be multiple antiphons for the psalm, eg. Easter, Christmas...
-ANT_H2_FONT = "MinionSub_bold"
-ANT_H2_FONT_SIZE = 7
-ANT_H2_FONT_COLOR = MAGNIFICAT_RED
-ANT_H2_INDENT = 4 * mm
-# this is the text of the antiphon itself
-ANT_2_FONT = "MinionSub_bold"
-ANT_2_FONT_SIZE = 0
-ANT_2_FONT_COLOR = black
+class Hymn(BreviarySection):
+    """
+    Hymn
 
 
+    """
+
+    # ----------------------------------------------------------------------
+    def __init__(self, hymns:Breviary.Hymn, x=0, y=0, width=HEADER_WIDTH, height=None):
+        Flowable.__init__(self)
+        self.x = x
+        self.y = y
+        self.width = width
+
+        self.hymns = hymns
+
+        if not height:
+            self.height = 0
+        else:
+            self.height = height
+
+        self.paragraphs = self.build_paragraphs()
+
+    def build_paragraphs(self):
+        from reportlab.platypus import Paragraph
+        from reportlab.lib.styles import ParagraphStyle
+
+        paragraphs = []
+
+        s = SectionHeader(title="Hymn")
+        for p in s.paragraphs:
+            paragraphs.append(p)
+        self.height = self.height + s.height
+        for h in self.hymns:
+            if h["saint_michaels_num"]:
+                st_m_string = " { #"+h["saint_michaels_num"]+"} "
+            antiphon_string = "<para> " + h["name"] + "<font color='#D63254'> ( #" + h["number"] + ")"+st_m_string+"</font></para>"
+            P = Paragraph(antiphon_string,
+                          ParagraphStyle(name='Psalm', fontName='Minion', leading=9, textColor=black, fontSize=8))
+
+            w, h = P.wrap(HEADER_WIDTH, 99999)
+            self.height = self.height + h
+            paragraphs.append((w, h, P))
+
+        S = Spacer(HEADER_WIDTH, 5)
+        w, h = S.wrap(HEADER_WIDTH, 99999)
+        paragraphs.append((w, h, S))
+        self.height += h
+        return paragraphs
 class Antiphon(BreviarySection):
     """
     antiphon(s) for the psalms, for multiple, pass a list of tuples
@@ -319,7 +348,6 @@ class Psalm(BreviarySection):
         self.paragraphs = self.build_paragraphs()
 
     def build_paragraphs(self):
-        from MagnificatTextStyle import PSALM_PARA_STYLE
         from reportlab.platypus import Paragraph
         from reportlab.lib.styles import ParagraphStyle
         paragraphs = []
@@ -406,6 +434,7 @@ class Reading(BreviarySection):
 
         from reportlab.lib.styles import ParagraphStyle
 
+        LINE_BREAK = "<br/>"
         paragraphs = []
 
         # title
@@ -446,10 +475,12 @@ class Reading(BreviarySection):
         self.height = self.height + h
 
         paragraphs.append((self.width, 3, line))
-        # summary string
+        # ensure all <br/> are space-less otherwise we could split one inadvertantly
+        self.text = self.text.replace("<br />", LINE_BREAK)
 
         # dropcap
-        reading_string = "<para align=right>" + self.text[0] + "</para>"
+        reading_string = self.text[0]
+        reading_string = "<para align=right>" + reading_string + "</para>"
         P = Paragraph(reading_string,
                       ParagraphStyle(name='Psalm', fontName='Minion', leading=20, textColor=MAGNIFICAT_RED,
                                      fontSize=20))
@@ -458,21 +489,37 @@ class Reading(BreviarySection):
         # first two lines
         table_width = HEADER_WIDTH / 2 - 1
         FONT_SIZE = 8
-        para_lines = 999
+        para_height = 0
+        word_number = 1
         P2 = None
+        substring = ""
         # create two line paragraph
-        #TODO this fails if split occours on a style tag ;-(
-        substring = self.text[1:-1]
-        while para_lines > (FONT_SIZE) * 2:
-            substring = substring.rsplit(' ', 1)[0]
+        # TODO this fails if split occours on a style tag ;-(, also this code is a mess
+        split_substring = self.text[1:-1].rsplit(' ')
+        # add words to paragraph until it takes up 3 lines then remove one
+        while para_height <= (FONT_SIZE) * 2:
+
+            substring = " ".join(split_substring[:word_number])
             reading_string = "<para align=left>" + substring + "</para>"
+
             P2 = Paragraph(reading_string, ParagraphStyle(name='Psalm', fontName='Minion', leading=8, textColor=black,
                                                           fontSize=FONT_SIZE))
             w, h = P2.wrap(table_width, 99999)
-            para_lines = h
+            para_height = h
+
+            if para_height > (FONT_SIZE) * 2:  # we have now gone over need to back up one
+                substring = " ".join(split_substring[:word_number - 1])
+                reading_string = "<para align=left>" + substring + "</para>"
+
+                P2 = Paragraph(reading_string,
+                               ParagraphStyle(name='Psalm', fontName='Minion', leading=8, textColor=black,
+                                              fontSize=FONT_SIZE))
+            word_number += 1
 
         # remainder
-        reading_string = "<para align=left >" + self.text[len(substring) + 1:-1] + "<br /></para>"
+        text_remainder = self.text[len(substring) + 1:-1]
+        text_remainder = text_remainder.replace(LINE_BREAK, LINE_BREAK + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
+        reading_string = "<para align=left >" + text_remainder + "</para>"
         P3 = Paragraph(reading_string,
                        ParagraphStyle(name='Psalm', fontName='Minion', leading=8, textColor=black, fontSize=FONT_SIZE))
         w, h = P3.wrap(HEADER_WIDTH, 99999)
@@ -505,19 +552,15 @@ class Intercessions(BreviarySection):
     """
 
     # ----------------------------------------------------------------------
-    def __init__(self, x=0, y=0, width=HEADER_WIDTH, height=None, first="", response="", intercessions=None):
+    def __init__(self, intercessions: Breviary.Intercessions, x=0, y=0, width=HEADER_WIDTH, height=None, ):
         Flowable.__init__(self)
         self.x = x
         self.y = y
         self.width = width
 
-        self.first = first
-
-        if intercessions is None:
-            intercessions = []
-        self.intercessions = intercessions
-        self.response = response
-
+        self.first = intercessions["first"]
+        self.response = intercessions["response"]
+        self.intercessions = intercessions["intercessions"]
         if not height:
             self.height = 0
         else:
@@ -566,8 +609,9 @@ class Intercessions(BreviarySection):
         self.height += h
 
         for i in self.intercessions:
-            title_1 = "<para leftIndent='5' firstLineIndent='-5'>" + i[0] + "<br /><font color='#D63254'> - </font>" + \
-                      i[1] + "</para>"
+            title_1 = "<para leftIndent='5' firstLineIndent='-5'>" + i[
+                'verse'] + "<br /><font color='#D63254'> - </font>" + \
+                      i['response'] + "</para>"
             P1 = Paragraph(title_1,
                            ParagraphStyle(name='Psalm', fontName='Minion_med', leading=8, textColor=black, fontSize=8))
             w, h = P1.wrap(HEADER_WIDTH, 99999)
@@ -587,7 +631,7 @@ class Intercessions(BreviarySection):
         return paragraphs
 
 
-class Responsery(BreviarySection):
+class Responsory(BreviarySection):
     """
 
 
@@ -625,7 +669,7 @@ class Responsery(BreviarySection):
         # w, h = P1.wrap(HEADER_WIDTH, 99999)
         # self.height = self.height + h
         # paragraphs.append((w, h, P1))
-        s = SectionHeader(title="Responsery")
+        s = SectionHeader(title="Responsory")
         for p in s.paragraphs:
             paragraphs.append(p)
         self.height = self.height + s.height
@@ -639,7 +683,8 @@ class Responsery(BreviarySection):
             paragraphs.append((w, h, P1))
 
             # resp
-            title_1 = "<para leftIndent='15' firstLineIndent='-5'><i>" + i["response"] + "</i></para>"
+            title_1 = "<para leftIndent='15' firstLineIndent='-5'><font color='#D63254'> - </font>" + i[
+                "response"] + "</para>"
             P1 = Paragraph(title_1,
                            ParagraphStyle(name='Psalm', fontName='Minion', leading=8, textColor=black, fontSize=8))
             w, h = P1.wrap(HEADER_WIDTH, 99999)
@@ -707,7 +752,7 @@ class Prayer(BreviarySection):
     """
 
     # ----------------------------------------------------------------------
-    def __init__(self, x=0, y=0, width=HEADER_WIDTH, height=None, prayers=None):
+    def __init__(self, prayers: list, x=0, y=0, width=HEADER_WIDTH, height=None):
         Flowable.__init__(self)
         self.x = x
         self.y = y

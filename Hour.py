@@ -20,7 +20,7 @@ class Breviary:
     Psalm = {"titles": [], "verse": "", "summary": "", "summary_verse": "", "text": ""}
     Reading = {"verse": "", "text": ""}
     Response = {"verse": "", "response": ""}
-    Intentions = {"first": "", "response": "", "intercessions": []}  # intercessions is list of Responses
+    Intercessions = {"first": "", "response": "", "intercessions": []}  # intercessions is list of Responses
     Hymn = {"name": "", "number": "", "saint_michaels_num": "", "in_ibrev": ""}
 
 
@@ -41,7 +41,7 @@ class Hour:
         self.reading = Breviary.Reading
         self.response = []  # List of Response type
         self.canticle_ant = []  # List of Antiphon type
-        self.intentions = Breviary.Intentions
+        self.intercessions = Breviary.Intercessions
         self.prayer = []  # List of Strings
 
     def process_row(self, row):
@@ -106,7 +106,7 @@ def process_row(row):
     h.response = row["response"]
     h.canticle_ant = row["canticle_ant"]
 
-    h.intentions = row["intentions"]
+    h.intercessions = row["intercessions"]
     h.prayer = row["prayer"]
 
     return h

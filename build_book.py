@@ -11,11 +11,13 @@ from reportlab.lib.units import mm
 from reportlab.lib.colors import Color
 
 # homemade
-from day_header_flowable import *
+from SectionStyles import *
 from Hour import *
+
 MAGNIFICAT_RED = Color(214 / 255, 50 / 255, 84 / 255, alpha=1)
 
 antiphon_on_current_page = False
+
 
 def build_story():
     story = []
@@ -23,39 +25,59 @@ def build_story():
     h = process_row(r)
 
     # Header
-    box = DayHeader(date=h.day, title="Week "+h.week_roman)
+    box = DayHeader(date=h.day, title="Week " + h.week_roman)
     story.append(box)
 
     hour = HourHeader(hour=h.hour)
     story.append(hour)
 
-    #Hymn
-    s = SectionHeader(title="Hymn")
-    story = psalm_split_correctly(s,story)
-    #TODO HYMN section must be made
-
-    #PSALMODY
+    # Hymn
+    hymn = Hymn(hymns=h.hymn)
+    story = psalm_split_correctly(hymn, story)
+    # TODO HYMN section must be made
+    # PSALMODY
     a = Antiphon(antiphon=h.ant_1)
-    story = psalm_split_correctly(a,story)
-    p=Psalm(h.ps_1)
-    story = psalm_split_correctly(p,story)
+    story = psalm_split_correctly(a, story)
+    p = Psalm(h.ps_1)
+    story = psalm_split_correctly(p, story)
 
     a = Antiphon(antiphon=h.ant_2)
-    story = psalm_split_correctly(a,story)
-    p=Psalm(h.ps_2)
-    story = psalm_split_correctly(p,story)
+    story = psalm_split_correctly(a, story)
+    p = Psalm(h.ps_2)
+    story = psalm_split_correctly(p, story)
 
     a = Antiphon(antiphon=h.ant_3)
-    story = psalm_split_correctly(a,story)
-    p=Psalm(h.ps_3)
-    story = psalm_split_correctly(p,story)
+    story = psalm_split_correctly(a, story)
+    p = Psalm(h.ps_3)
+    story = psalm_split_correctly(p, story)
 
     r = Reading(reading=h.reading)
-    psalm_split_correctly(r,story)
+    psalm_split_correctly(r, story)
 
-    r = Responsery(responses = h.response)
+    r = Responsory(responses=h.response)
+    psalm_split_correctly(r, story)
 
+    if h.hour == Breviary.MORNING_PRAYER:
+        s = SectionHeader(title="Canticle of Zechariah")
+        story = psalm_split_correctly(s, story)
+    elif h.hour == Breviary.EVENING_PRAYER:
+        s = SectionHeader(title="Canticle of Mary")
+        story = psalm_split_correctly(s, story)
+    elif h.hour == Breviary.NIGHT_PRAYER:
+        s = SectionHeader(title="Canticle of Simeon")
+        story = psalm_split_correctly(s, story)
+
+    a = Antiphon(antiphon=h.canticle_ant)
+    story = psalm_split_correctly(a, story)
+
+    i = Intercessions(intercessions=h.intercessions)
+    story = psalm_split_correctly(i, story)
+
+
+    p= Prayer(prayers = h.prayer)
+    story = psalm_split_correctly(p, story)
     return story
+
 
 def main():
     from reportlab.pdfbase import pdfmetrics
@@ -80,7 +102,6 @@ def main():
 
     story = build_story()
     # add some flowables
-
 
     # C6 = (114*mm,162*mm)
     doc = BaseDocTemplate('mydoc.pdf', pagesize=C6,
@@ -111,6 +132,7 @@ def psalm_split_correctly(psalm, story):
     for stanza in psalm.paragraphs:
         story.append(stanza[2])
     return story
+
 
 def add_header(canvas, doc):
     # Page Number
@@ -147,9 +169,6 @@ def add_header(canvas, doc):
                           canvas.pageTitle)
 
 
-
-
-
 class NumberedCanvas(canvas.Canvas):
 
     def __init__(self, *args, **kwargs):
@@ -167,8 +186,6 @@ class NumberedCanvas(canvas.Canvas):
             self.__dict__.update(state)
             canvas.Canvas.show_page(self)
         canvas.Canvas.save(self)
-
-
 
 
 if __name__ == "__main__":
