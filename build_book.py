@@ -2,7 +2,7 @@
 import reportlab.rl_config
 from reportlab.lib.pagesizes import C6
 from reportlab.platypus import BaseDocTemplate, Frame, PageTemplate
-
+from BreviaryDocTemplate import *
 reportlab.rl_config.warnOnMissingFontGlyphs = 0
 
 from reportlab.pdfgen import canvas
@@ -18,12 +18,7 @@ MAGNIFICAT_RED = Color(214 / 255, 50 / 255, 84 / 255, alpha=1)
 
 antiphon_on_current_page = False
 
-
-def build_story():
-    story = []
-    r = fetch_rows()
-    h = process_row(r)
-
+def build_hour(h, story):
     # Header
     box = DayHeader(date=h.day, title="Week " + h.week_roman)
     story.append(box)
@@ -34,22 +29,28 @@ def build_story():
     # Hymn
     hymn = Hymn(hymns=h.hymn)
     story = psalm_split_correctly(hymn, story)
-    # TODO HYMN section must be made
+
     # PSALMODY
     a = Antiphon(antiphon=h.ant_1)
     story = psalm_split_correctly(a, story)
     p = Psalm(h.ps_1)
     story = psalm_split_correctly(p, story)
+    a = Antiphon(antiphon=h.ant_1)
+    story = psalm_split_correctly(a, story)
 
     a = Antiphon(antiphon=h.ant_2)
     story = psalm_split_correctly(a, story)
     p = Psalm(h.ps_2)
     story = psalm_split_correctly(p, story)
+    a = Antiphon(antiphon=h.ant_2)
+    story = psalm_split_correctly(a, story)
 
     a = Antiphon(antiphon=h.ant_3)
     story = psalm_split_correctly(a, story)
     p = Psalm(h.ps_3)
     story = psalm_split_correctly(p, story)
+    a = Antiphon(antiphon=h.ant_3)
+    story = psalm_split_correctly(a, story)
 
     r = Reading(reading=h.reading)
     psalm_split_correctly(r, story)
@@ -73,9 +74,19 @@ def build_story():
     i = Intercessions(intercessions=h.intercessions)
     story = psalm_split_correctly(i, story)
 
-
-    p= Prayer(prayers = h.prayer)
+    p = Prayer(prayers=h.prayer)
     story = psalm_split_correctly(p, story)
+    return story
+
+def build_story():
+    story = []
+    r = fetch_rows()
+    h = process_row(r)
+    for i in range(10):
+        story = build_hour(h, story)
+
+
+
     return story
 
 
@@ -104,7 +115,7 @@ def main():
     # add some flowables
 
     # C6 = (114*mm,162*mm)
-    doc = BaseDocTemplate('mydoc.pdf', pagesize=C6,
+    doc = BreviaryDocTemplate('mydoc.pdf', pagesize=C6,
                           pageTemplates=[],
                           showBoundary=1,
                           leftMargin=10 * mm,

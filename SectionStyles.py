@@ -243,7 +243,7 @@ class Hymn(BreviarySection):
         for h in self.hymns:
             if h["saint_michaels_num"]:
                 st_m_string = " { #"+h["saint_michaels_num"]+"} "
-            antiphon_string = "<para> " + h["name"] + "<font color='#D63254'> ( #" + h["number"] + ")"+st_m_string+"</font></para>"
+            antiphon_string = "<para><b> " + h["name"] + "</b><font color='#D63254'> ( #" + h["number"] + ")"+st_m_string+"</font></para>"
             P = Paragraph(antiphon_string,
                           ParagraphStyle(name='Psalm', fontName='Minion', leading=9, textColor=black, fontSize=8))
 
@@ -520,11 +520,9 @@ class Reading(BreviarySection):
         text_remainder = self.text[len(substring) + 1:-1]
         text_remainder = text_remainder.replace(LINE_BREAK, LINE_BREAK + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
         reading_string = "<para align=left >" + text_remainder + "</para>"
-        P3 = Paragraph(reading_string,
-                       ParagraphStyle(name='Psalm', fontName='Minion', leading=8, textColor=black, fontSize=FONT_SIZE))
-        w, h = P3.wrap(HEADER_WIDTH, 99999)
 
-        T2 = Table([[P, P2], [P3, 0]])
+
+        T2 = Table([[P, P2]])
         # T=Table([["1","2"],["3","4"]])
         T2.setStyle(TableStyle([('SPAN', (0, 1), (1, 1)),
                                 # ('GRID', (0, 0), (-1, -1), 0.25, black),
@@ -535,10 +533,18 @@ class Reading(BreviarySection):
                                 ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
                                 ('BOTTOMPADDING', (0, 1), (1, 1), 5)]))
 
+
         w, h = T2.wrap(HEADER_WIDTH, 999999)
         self.height += h
         print("h3:", self.height)
         paragraphs.append((w, h, T2))
+
+        P3 = Paragraph(reading_string,
+                       ParagraphStyle(name='Psalm', fontName='Minion', leading=8, textColor=black, fontSize=FONT_SIZE))
+        P3.split(HEADER_WIDTH,9999)
+        #w, h = P3.wrap(HEADER_WIDTH, 99999)
+        #self.height += h
+        paragraphs.append((w, h, P3))
 
         return paragraphs
 
