@@ -21,7 +21,7 @@ antiphon_on_current_page = False
 def build_hour(h, story):
     # Header
     box = DayHeader(date=h.day, title="Week " + h.week_roman)
-    story.append(box)
+    story=psalm_split_correctly(box,story)
 
     hour = HourHeader(hour=h.hour)
     story.append(hour)
@@ -112,6 +112,7 @@ def main():
     registerFontFamily('Minion', normal='Minion', bold='Minion_b', italic='Minion_i', boldItalic='Minion_b_i')
 
     story = build_story()
+
     # add some flowables
 
     # C6 = (114*mm,162*mm)

@@ -2,7 +2,7 @@ from reportlab.lib.colors import Color, black
 from reportlab.lib.units import mm
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.platypus import Flowable, \
-    CondPageBreak, HRFlowable, Table, Spacer
+    CondPageBreak, HRFlowable, Table, Spacer, KeepTogether
 from Hour import *
 
 MAGNIFICAT_RED = Color(214 / 255, 50 / 255, 84 / 255, alpha=1)
@@ -11,18 +11,7 @@ HEADER_WIDTH = 90 * mm
 
 POINT_TO_MM = 0.3527
 
-# FORMATTING
-DATE_FONT = "Minion"
-DATE_FONT_SIZE = 13
-DATE_FONT_COLOR = MAGNIFICAT_RED
 
-LEVEL_FONT = "Minion"
-LEVEL_FONT_SIZE = 8
-LEVEL_FONT_COLOR = MAGNIFICAT_RED
-
-TITLE_FONT = "MinionSub"
-TITLE_FONT_SIZE = 8
-TITLE_FONT_COLOR = black
 
 
 def resize_date_to_fit(text, font, font_size, width=HEADER_WIDTH, percentage_margin=0.75):
@@ -31,6 +20,10 @@ def resize_date_to_fit(text, font, font_size, width=HEADER_WIDTH, percentage_mar
 
     return font_size
 
+# FORMATTING
+DATE_FONT_SIZE = 13
+LEVEL_FONT_SIZE = 8
+TITLE_FONT_SIZE = 8
 
 class BreviarySection(Flowable):
     def __init__(self, x=0, y=0, width=HEADER_WIDTH, height=None):
@@ -70,19 +63,25 @@ class DayHeader(BreviarySection):
     # ----------------------------------------------------------------------
     def __init__(self, x=0, y=0, width=HEADER_WIDTH, height=None, date="", title="", level=""):
         Flowable.__init__(self)
+        self.date_font_size = DATE_FONT_SIZE
+        self.level_font_size = LEVEL_FONT_SIZE
+        self.title_font_size = TITLE_FONT_SIZE
+
+        self.TOP_MARGIN = 5
+        self.BOTTOM_MARGIN = 2
+
         self.x = x
-        self.y = y
+        self.y = y - self.BOTTOM_MARGIN#add offset to shift down some
         self.width = width
         self.date = date
         self.title = title
         self.level = level
+        self.paragraphs = []
 
-        self.date_font_size = DATE_FONT_SIZE
-        self.level_font_size = LEVEL_FONT_SIZE
-        self.title_font_size = TITLE_FONT_SIZE
         if not height:
             self.height = self.calc_height()
 
+        self.build_table()
     # ----------------------------------------------------------------------
 
     def calc_height(self):
@@ -91,60 +90,115 @@ class DayHeader(BreviarySection):
 
         total_height = (bool(self.date) * self.date_font_size + bool(self.title) * self.title_font_size + bool(
             self.level) * self.level_font_size)
+        total_height += self.TOP_MARGIN
+        total_height += self.BOTTOM_MARGIN
         total_height = MARGIN_PERCENTALE * total_height
         return total_height
 
-    def draw(self):
-        """
-        Draw the shape, text, etc
-        """
-        # TODO resize font if too wide
-        self.date_font_size = resize_date_to_fit(self.date, DATE_FONT, self.date_font_size)
+    def build_table(self):
 
-        # resize date if it is too long for container
+        from reportlab.platypus import Paragraph, TableStyle
+        from reportlab.lib.styles import ParagraphStyle, TA_CENTER
+        date_para = Paragraph(self.date,
+                          ParagraphStyle(name='Date', alignment=TA_CENTER,fontName='Minion', leading=13, textColor=MAGNIFICAT_RED, fontSize=13))
+        if self.level:
+            level_para = Paragraph(self.level,
+                                  ParagraphStyle(name='Level', alignment=TA_CENTER,fontName='Minion', leading=8, textColor=MAGNIFICAT_RED,
+                                                 fontSize=8))
+        else:
+            level_para=None
+        title_para = Paragraph(self.title,
+                              ParagraphStyle(name='Title', alignment=TA_CENTER,fontName='Minion', leading=8, textColor=black,
+                                             fontSize=8))
+        line_style = [('LINEABOVE',(0,0),(0,0),1,black,'butt'),('LINEABOVE',(2,0),(2,0),1,black,'butt'),
+                      ('LINEBELOW',(0,4),(0,4),1,black,'butt'),('LINEBELOW',(2,4),(2,4),1,black,'butt'),
+                      ('LINEBEFORE',(0,1),(0,3),3,black,'projecting'),('LINEAFTER',(2,1),(2,3),3,black,'projecting')]
+        table_style = TableStyle([('BOTTOMPADDING',(0,0),(-1,-1),0),
+                                  ('TOPPADDING',(0,0),(-1,-1),0)])
 
-        bracket_width = 5 * mm
+        row_heights = []
+        row_heights.append(1)
+        if self.date:
+            row_heights.append(None)
+        else:
+            row_heights.append(0)
+            print("No l")
+        if self.level:
+            row_heights.append(None)
+        else:
+            row_heights.append(0)
+            print("No t")
+        if self.title:
+            row_heights.append(None)
+        else:
+            row_heights.append(0)
+            print("No d")
+        row_heights.append(1)
 
-        self.canv.setLineWidth(3)
+        t=Table([["","",""],["",date_para,""],["",level_para,""],["",title_para,""],["","",""]],colWidths=[5*mm,HEADER_WIDTH-10*mm,5*mm],rowHeights=row_heights, style = line_style, spaceBefore=self.TOP_MARGIN, spaceAfter=self.BOTTOM_MARGIN)
 
-        offset = 0.5  # needed to square up corners
-        # vertical members
-        self.canv.line(self.x, self.y - offset, self.x, self.y + self.height + offset)
-        self.canv.line(self.x + self.width, self.y - offset, self.x + self.width, self.y + self.height + offset)
 
-        self.canv.setLineWidth(1)
-        # left horizontal
-        self.canv.line(self.x, self.y, self.x + bracket_width, self.y)
-        self.canv.line(self.x, self.y + self.height, self.x + bracket_width, self.y + self.height)
+        t.setStyle(table_style)
 
-        # right horizontal
-        self.canv.line(self.x + self.width, self.y, self.x + self.width - bracket_width, self.y)
-        self.canv.line(self.x + self.width, self.y + self.height, self.x + self.width - bracket_width,
-                       self.y + self.height)
+        (w,h) = t.wrap(HEADER_WIDTH,99999)
+        self.height = h
+        self.paragraphs.append((w,h,KeepTogether(t)))
 
-        # DATE STYLE
-        self.canv.setFont(DATE_FONT, self.date_font_size)
-        self.canv.setFillColor(DATE_FONT_COLOR)
-
-        self.canv.drawCentredString(self.width / 2, self.y + self.height - self.date_font_size, self.date.upper())
-
-        # LEVEL STYLE
-        self.canv.setFont(LEVEL_FONT, self.level_font_size)
-        self.canv.setFillColor(LEVEL_FONT_COLOR)
-        level_y_pos = self.y + (self.height / 2) - LEVEL_FONT_SIZE * POINT_TO_MM
-        if (self.level == "S"):
-            self.canv.drawCentredString(self.width / 2, level_y_pos, "SOLEMNITY")
-        elif self.level == "F":
-            self.canv.drawCentredString(self.width / 2, level_y_pos, "FEAST")
-        elif self.level == "M":
-            self.canv.drawCentredString(self.width / 2, level_y_pos, "MEMORIAL")
-        elif self.level == "m":
-            self.canv.drawCentredString(self.width / 2, level_y_pos, "OPTIONAL MEMORIAL")
-
-        # TITLE STYLE
-        self.canv.setFont("MinionSub", 8)
-        self.canv.setFillColor(black)
-        self.canv.drawCentredString(self.width / 2, self.y + self.title_font_size, self.title)
+    # def draw(self):
+    #     """
+    #     Draw the shape, text, etc
+    #     """
+    #     # TODO resize font if too wide
+    #     self.date_font_size = resize_date_to_fit(self.date, DATE_FONT, self.date_font_size)
+    #
+    #     # resize date if it is too long for container
+    #
+    #     bracket_width = 5 * mm
+    #
+    #     self.canv.setLineWidth(3)
+    #
+    #     offset = 0.5  # needed to square up corners
+    #     # vertical members
+    #     self.canv.line(self.x, self.y - offset, self.x, self.y + self.height + offset)
+    #     self.canv.line(self.x + self.width, self.y - offset, self.x + self.width, self.y + self.height + offset)
+    #
+    #     self.canv.setLineWidth(1)
+    #     # left horizontal
+    #     self.canv.line(self.x, self.y, self.x + bracket_width, self.y)
+    #     self.canv.line(self.x, self.y + self.height, self.x + bracket_width, self.y + self.height)
+    #
+    #     # right horizontal
+    #     self.canv.line(self.x + self.width, self.y, self.x + self.width - bracket_width, self.y)
+    #     self.canv.line(self.x + self.width, self.y + self.height, self.x + self.width - bracket_width,
+    #                    self.y + self.height)
+    #
+    #     # DATE STYLE
+    #     self.canv.setFont(DATE_FONT, self.date_font_size)
+    #     self.canv.setFillColor(DATE_FONT_COLOR)
+    #
+    #     self.canv.drawCentredString(self.width / 2, self.y + self.height - self.date_font_size, self.date.upper())
+    #
+    #     # LEVEL STYLE
+    #     self.canv.setFont(LEVEL_FONT, self.level_font_size)
+    #     self.canv.setFillColor(LEVEL_FONT_COLOR)
+    #     level_y_pos = self.y + (self.height / 2) - LEVEL_FONT_SIZE * POINT_TO_MM
+    #     print("H:",self.height,"  Y:",self.y," Lin:",level_y_pos)
+    #     self.canv.line(self.x, self.y+self.TOP_MARGIN+self.height, self.width, self.y+self.height+self.TOP_MARGIN)
+    #     self.canv.line(self.x, self.y-self.BOTTOM_MARGIN, self.width, self.y-self.BOTTOM_MARGIN)
+    #
+    #     if (self.level == "S"):
+    #         self.canv.drawCentredString(self.width / 2, level_y_pos, "SOLEMNITY")
+    #     elif self.level == "F":
+    #         self.canv.drawCentredString(self.width / 2, level_y_pos, "FEAST")
+    #     elif self.level == "M":
+    #         self.canv.drawCentredString(self.width / 2, level_y_pos, "MEMORIAL")
+    #     elif self.level == "m":
+    #         self.canv.drawCentredString(self.width / 2, level_y_pos, "OPTIONAL MEMORIAL")
+    #
+    #     # TITLE STYLE
+    #     self.canv.setFont("MinionSub", 8)
+    #     self.canv.setFillColor(black)
+    #     self.canv.drawCentredString(self.width / 2, self.y + self.title_font_size, self.title)
 
 
 HOUR_FONT = "MinionSub_bold"
@@ -434,7 +488,7 @@ class Reading(BreviarySection):
 
         from reportlab.lib.styles import ParagraphStyle
 
-        LINE_BREAK = "<br/>"
+        LINE_BREAK = "<br />"
         paragraphs = []
 
         # title
@@ -495,7 +549,12 @@ class Reading(BreviarySection):
         substring = ""
         # create two line paragraph
         # TODO this fails if split occours on a style tag ;-(, also this code is a mess
-        split_substring = self.text[1:-1].rsplit(' ')
+        import re
+        # as per recommendation from @freylis, compile once only
+        CLEANR = re.compile('<.*?>')
+
+        text_without_tags = re.sub(CLEANR, '', self.text[1:-1])
+        split_substring = text_without_tags.rsplit(' ')
         # add words to paragraph until it takes up 3 lines then remove one
         while para_height <= (FONT_SIZE) * 2:
 
@@ -536,14 +595,13 @@ class Reading(BreviarySection):
 
         w, h = T2.wrap(HEADER_WIDTH, 999999)
         self.height += h
-        print("h3:", self.height)
         paragraphs.append((w, h, T2))
 
         P3 = Paragraph(reading_string,
                        ParagraphStyle(name='Psalm', fontName='Minion', leading=8, textColor=black, fontSize=FONT_SIZE))
-        P3.split(HEADER_WIDTH,9999)
-        #w, h = P3.wrap(HEADER_WIDTH, 99999)
-        #self.height += h
+
+        w, h = P3.wrap(HEADER_WIDTH, 162*mm)
+        self.height += h
         paragraphs.append((w, h, P3))
 
         return paragraphs

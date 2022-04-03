@@ -25,5 +25,5 @@ class BreviaryDocTemplate(BaseDocTemplate):
             #print(self.current_spread_para_ids)
             if flowables[0].getPlainText(identify=1) in self.current_spread_para_ids:
                 flowables[0] = None
-                print("\n\n\n**********Found duplicate\n\n\n")
+
 
