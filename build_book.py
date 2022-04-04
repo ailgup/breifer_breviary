@@ -80,11 +80,11 @@ def build_hour(h, story):
 
 def build_story():
     story = []
-    r = fetch_rows()
-    h = process_row(r)
-    for i in range(10):
-        story = build_hour(h, story)
+    rows = fetch_rows()
 
+    for r in rows:
+        h = process_row(r)
+        story = build_hour(h, story)
 
 
     return story
@@ -128,12 +128,12 @@ def main():
                           author=None,
                           _pageBreakQuick=1,
                           encrypt=None)
-    doc.page_title = "Tuesday of Holy Week"
+
 
     # normal frame as for SimpleFlowDocument
     frame_t = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id='normal')
 
-    doc.addPageTemplates([PageTemplate(id='OneCol', frames=frame_t, onPage=add_header)
+    doc.addPageTemplates([PageTemplate(id='OneCol', frames=frame_t)#, onPage=add_header)
                           ])
     doc.build(story, canvasmaker=NumberedCanvas)
 
@@ -146,39 +146,7 @@ def psalm_split_correctly(psalm, story):
     return story
 
 
-def add_header(canvas, doc):
-    # Page Number
-    canvas.setFont("Minion", 7)
-    PAGE_NUMBER_Y_MARGIN = 5 * mm
-    PAGE_NUMBER_X_MARGIN = 5 * mm
 
-    # even pages get number on left, odd on right
-    x_loc = PAGE_NUMBER_X_MARGIN
-    if doc.page % 2:
-        x_loc = C6[0] - PAGE_NUMBER_X_MARGIN
-        canvas.drawRightString(x_loc, C6[1] - PAGE_NUMBER_Y_MARGIN,
-                               "%d" % doc.page)
-    else:
-        canvas.drawString(x_loc, C6[1] - PAGE_NUMBER_Y_MARGIN,
-                          "%d" % doc.page)
-
-    # Title
-
-    canvas.setFont("Minion", 7)
-    canvas.setFillColor(MAGNIFICAT_RED)
-    canvas.textTransform = "uppercase"
-    PAGE_NUMBER_Y_MARGIN = 5 * mm
-    PAGE_NUMBER_X_MARGIN = 15 * mm
-
-    # even pages get number on left, odd on right
-    x_loc = PAGE_NUMBER_X_MARGIN
-    if doc.page % 2:
-        x_loc = C6[0] - PAGE_NUMBER_X_MARGIN
-        canvas.drawRightString(x_loc, C6[1] - PAGE_NUMBER_Y_MARGIN,
-                               canvas.pageTitle)
-    else:
-        canvas.drawString(x_loc, C6[1] - PAGE_NUMBER_Y_MARGIN,
-                          canvas.pageTitle)
 
 
 class NumberedCanvas(canvas.Canvas):
@@ -186,18 +154,56 @@ class NumberedCanvas(canvas.Canvas):
     def __init__(self, *args, **kwargs):
         canvas.Canvas.__init__(self, *args, **kwargs)
         self._saved_page_states = []
-        self.pageTitle = "Monday of the First Week of Lent"
 
-    def show_page(self):
+    def showPage(self):
         self._saved_page_states.append(dict(self.__dict__))
         self._startPage()
 
+
     def save(self):
         """add page info to each page (page x of y)"""
-        for state in self._saved_page_states:
+        num_pages = len(self._saved_page_states)
+        for i, state in enumerate(self._saved_page_states):  # counting pages with i
+            print("U")
             self.__dict__.update(state)
-            canvas.Canvas.show_page(self)
+            self.add_header(num_pages,i)  # send 'portrait'/'landscape'
+            canvas.Canvas.showPage(self)
         canvas.Canvas.save(self)
+
+    def add_header(self, title:str):
+        # Page Number
+        self.setFont("Minion", 7)
+        PAGE_NUMBER_Y_MARGIN = 5 * mm
+        PAGE_NUMBER_X_MARGIN = 5 * mm
+
+        # even pages get number on left, odd on right
+        x_loc = PAGE_NUMBER_X_MARGIN
+        page = self.getPageNumber()
+        if page % 2:
+            x_loc = C6[0] - PAGE_NUMBER_X_MARGIN
+            self.drawRightString(x_loc, C6[1] - PAGE_NUMBER_Y_MARGIN,
+                                   "%d" % page)
+        else:
+            self.drawString(x_loc, C6[1] - PAGE_NUMBER_Y_MARGIN,
+                              "%d" % page)
+
+        # Title
+
+        self.setFont("Minion", 7)
+        self.setFillColor(MAGNIFICAT_RED)
+        self.textTransform = "uppercase"
+        PAGE_NUMBER_Y_MARGIN = 5 * mm
+        PAGE_NUMBER_X_MARGIN = 15 * mm
+
+        # even pages get number on left, odd on right
+        x_loc = PAGE_NUMBER_X_MARGIN
+        if page % 2:
+            x_loc = C6[0] - PAGE_NUMBER_X_MARGIN
+            self.drawRightString(x_loc, C6[1] - PAGE_NUMBER_Y_MARGIN,
+                                   title)
+        else:
+            self.drawString(x_loc, C6[1] - PAGE_NUMBER_Y_MARGIN,
+                              title)
 
 
 if __name__ == "__main__":

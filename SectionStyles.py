@@ -122,17 +122,14 @@ class DayHeader(BreviarySection):
             row_heights.append(None)
         else:
             row_heights.append(0)
-            print("No l")
         if self.level:
             row_heights.append(None)
         else:
             row_heights.append(0)
-            print("No t")
         if self.title:
             row_heights.append(None)
         else:
             row_heights.append(0)
-            print("No d")
         row_heights.append(1)
 
         t=Table([["","",""],["",date_para,""],["",level_para,""],["",title_para,""],["","",""]],colWidths=[5*mm,HEADER_WIDTH-10*mm,5*mm],rowHeights=row_heights, style = line_style, spaceBefore=self.TOP_MARGIN, spaceAfter=self.BOTTOM_MARGIN)
@@ -352,7 +349,7 @@ class Antiphon(BreviarySection):
                 antiphon_string = "<para leftIndent='15' firstLineIndent='-5'> <font color='#D63254'>" + a[
                     "title"] + "</font> " + a["ant"] + "</para>"
                 P = Paragraph(antiphon_string,
-                              ParagraphStyle(name='Psalm', fontName='Minion', leading=7, textColor=black, fontSize=6))
+                              ParagraphStyle(name='Psalm', fontName='Minion', leading=7, textColor=black, fontSize=7))
 
             w, h = P.wrap(HEADER_WIDTH, 99999)
             self.height = self.height + h

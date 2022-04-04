@@ -1,10 +1,14 @@
 from reportlab.platypus import BaseDocTemplate, Paragraph
 
+from reportlab.lib.units import mm
+from reportlab.lib.pagesizes import C6
 
 class BreviaryDocTemplate(BaseDocTemplate):
     def __init__(self, *args, **kwargs):
         BaseDocTemplate.__init__(self, *args, **kwargs)
         self.current_spread_para_ids = []
+        self.current_title=""
+
 
 
     def afterPage(self):

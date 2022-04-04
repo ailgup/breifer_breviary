@@ -51,7 +51,7 @@ class Hour:
 def fetch_rows(table="four_week"):
     import psycopg2
     import psycopg2.extras
-    row = None
+    rows = []
     try:
         conn = psycopg2.connect(
             host="localhost",
@@ -60,11 +60,8 @@ def fetch_rows(table="four_week"):
             password="postgres")
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute("SELECT * FROM " + table)
-        row = cur.fetchone()
-        # print(row["day"])
-        # while row is not None:
-        #    print(row)
-        #    row = cur.fetchone()
+        for row in cur:
+            rows.append(row)
 
         cur.close()
 
@@ -75,7 +72,7 @@ def fetch_rows(table="four_week"):
         if conn is not None:
             conn.close()
 
-    return row
+    return rows
 
 
 def process_row(row):
