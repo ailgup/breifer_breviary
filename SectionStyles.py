@@ -2,8 +2,9 @@ from reportlab.lib.colors import Color, black
 from reportlab.lib.units import mm
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.platypus import Flowable, \
-    CondPageBreak, HRFlowable, Table, Spacer, KeepTogether
+    CondPageBreak, HRFlowable, Spacer
 from Hour import *
+from CustomFlowables import Table, KeepTogether, Paragraph
 
 MAGNIFICAT_RED = Color(214 / 255, 50 / 255, 84 / 255, alpha=1)
 
@@ -100,15 +101,15 @@ class DayHeader(BreviarySection):
         from reportlab.platypus import Paragraph, TableStyle
         from reportlab.lib.styles import ParagraphStyle, TA_CENTER
         date_para = Paragraph(self.date,
-                          ParagraphStyle(name='Date', alignment=TA_CENTER,fontName='Minion', leading=13, textColor=MAGNIFICAT_RED, fontSize=13))
+                          ParagraphStyle(name='day_header_date', alignment=TA_CENTER,fontName='Minion', leading=13, textColor=MAGNIFICAT_RED, fontSize=13))
         if self.level:
             level_para = Paragraph(self.level,
-                                  ParagraphStyle(name='Level', alignment=TA_CENTER,fontName='Minion', leading=8, textColor=MAGNIFICAT_RED,
+                                  ParagraphStyle(name='day_header_level', alignment=TA_CENTER,fontName='Minion', leading=8, textColor=MAGNIFICAT_RED,
                                                  fontSize=8))
         else:
             level_para=None
         title_para = Paragraph(self.title,
-                              ParagraphStyle(name='Title', alignment=TA_CENTER,fontName='Minion', leading=8, textColor=black,
+                              ParagraphStyle(name='day_header_title', alignment=TA_CENTER,fontName='Minion', leading=8, textColor=black,
                                              fontSize=8))
         line_style = [('LINEABOVE',(0,0),(0,0),1,black,'butt'),('LINEABOVE',(2,0),(2,0),1,black,'butt'),
                       ('LINEBELOW',(0,4),(0,4),1,black,'butt'),('LINEBELOW',(2,4),(2,4),1,black,'butt'),
@@ -138,8 +139,12 @@ class DayHeader(BreviarySection):
         t.setStyle(table_style)
 
         (w,h) = t.wrap(HEADER_WIDTH,99999)
+        k = KeepTogether(t)
+        k.title = "day_header"
+        k.payload=self.date+" "+self.level+" "+self.title
+        k.payload = k.payload.replace("  "," ")
         self.height = h
-        self.paragraphs.append((w,h,KeepTogether(t)))
+        self.paragraphs.append((w,h,k))
 
     # def draw(self):
     #     """
@@ -211,6 +216,7 @@ def resize_font_to_fit(text, font, font_size, width=HEADER_WIDTH, percentage_mar
 
 
 class HourHeader(BreviarySection):
+
     """
     Draw a header for the hour, center bolded, red text
     
@@ -234,8 +240,27 @@ class HourHeader(BreviarySection):
             self.height = self.calc_height()
         else:
             self.height = height
-
+        self.paragraphs=self.build_paragraphs()
     # ----------------------------------------------------------------------
+    def build_paragraphs(self):
+        from CustomFlowables import Paragraph
+        from reportlab.lib.styles import ParagraphStyle
+        paragraphs = []
+
+        string = "<para align=center>"+self.hour+"</para>"
+        P = Paragraph(string,ParagraphStyle(name='Psalm', fontName='MinionSub_bold', leading=9, textColor=MAGNIFICAT_RED, fontSize=10))
+        P.title = "hour_header"
+        P.payload = self.hour
+        w, h = P.wrap(HEADER_WIDTH, 99999)
+        self.height = self.height + h
+        paragraphs.append((w, h, P))
+
+        #S = Spacer(HEADER_WIDTH, 5)
+        #w, h = S.wrap(HEADER_WIDTH, 99999)
+        #paragraphs.append((w, h, S))
+        #self.height += h
+
+        return paragraphs
 
     def calc_height(self):
         POINT_TO_MM = 1
@@ -251,11 +276,11 @@ class HourHeader(BreviarySection):
         Draw the shape, text, etc
         """
 
-        # DATE STYLE
-        self.canv.setFont(HOUR_FONT, self.hour_font_size)
-        self.canv.setFillColor(HOUR_FONT_COLOR)
-
-        self.canv.drawCentredString(self.width / 2, self.y + self.height - self.hour_font_size, self.hour)
+        # # DATE STYLE
+        # self.canv.setFont(HOUR_FONT, self.hour_font_size)
+        # self.canv.setFillColor(HOUR_FONT_COLOR)
+        #
+        # self.canv.drawCentredString(self.width / 2, self.y + self.height - self.hour_font_size, self.hour)
 
 
 class Hymn(BreviarySection):
@@ -343,13 +368,13 @@ class Antiphon(BreviarySection):
             if self.antiphon.index(a) == 0:
                 antiphon_string = "<para><font color='#D63254'>" + a["title"] + '</font> ' + a["ant"] + "</para>"
                 P = Paragraph(antiphon_string,
-                              ParagraphStyle(name='Psalm', fontName='Minion', leading=10, textColor=black, fontSize=8))
+                              ParagraphStyle(name='antiphon_first', fontName='Minion', leading=10, textColor=black, fontSize=8))
 
             else:
                 antiphon_string = "<para leftIndent='15' firstLineIndent='-5'> <font color='#D63254'>" + a[
                     "title"] + "</font> " + a["ant"] + "</para>"
                 P = Paragraph(antiphon_string,
-                              ParagraphStyle(name='Psalm', fontName='Minion', leading=7, textColor=black, fontSize=7))
+                              ParagraphStyle(name='antiphon_secondary', fontName='Minion', leading=7, textColor=black, fontSize=7))
 
             w, h = P.wrap(HEADER_WIDTH, 99999)
             self.height = self.height + h

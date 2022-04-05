@@ -3,6 +3,7 @@ import reportlab.rl_config
 from reportlab.lib.pagesizes import C6
 from reportlab.platypus import BaseDocTemplate, Frame, PageTemplate
 from BreviaryDocTemplate import *
+
 reportlab.rl_config.warnOnMissingFontGlyphs = 0
 
 from reportlab.pdfgen import canvas
@@ -18,13 +19,14 @@ MAGNIFICAT_RED = Color(214 / 255, 50 / 255, 84 / 255, alpha=1)
 
 antiphon_on_current_page = False
 
+
 def build_hour(h, story):
     # Header
     box = DayHeader(date=h.day, title="Week " + h.week_roman)
-    story=psalm_split_correctly(box,story)
+    story = psalm_split_correctly(box, story)
 
     hour = HourHeader(hour=h.hour)
-    story.append(hour)
+    story=psalm_split_correctly(hour,story)
 
     # Hymn
     hymn = Hymn(hymns=h.hymn)
@@ -78,6 +80,7 @@ def build_hour(h, story):
     story = psalm_split_correctly(p, story)
     return story
 
+
 def build_story():
     story = []
     rows = fetch_rows()
@@ -85,7 +88,6 @@ def build_story():
     for r in rows:
         h = process_row(r)
         story = build_hour(h, story)
-
 
     return story
 
@@ -117,24 +119,23 @@ def main():
 
     # C6 = (114*mm,162*mm)
     doc = BreviaryDocTemplate('mydoc.pdf', pagesize=C6,
-                          pageTemplates=[],
-                          showBoundary=1,
-                          leftMargin=10 * mm,
-                          rightMargin=10 * mm,
-                          topMargin=10 * mm,
-                          bottomMargin=10 * mm,
-                          allowSplitting=1,
-                          title='A Briefer Breviary',
-                          author=None,
-                          _pageBreakQuick=1,
-                          encrypt=None)
-
+                              pageTemplates=[],
+                              showBoundary=1,
+                              leftMargin=10 * mm,
+                              rightMargin=10 * mm,
+                              topMargin=10 * mm,
+                              bottomMargin=10 * mm,
+                              allowSplitting=1,
+                              title='A Briefer Breviary',
+                              author=None,
+                              _pageBreakQuick=1,
+                              encrypt=None)
 
     # normal frame as for SimpleFlowDocument
     frame_t = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id='normal')
-
-    doc.addPageTemplates([PageTemplate(id='OneCol', frames=frame_t)#, onPage=add_header)
-                          ])
+    from PsalterTemplate import PsalterTemplate
+    page_template = PsalterTemplate(id='OneCol', frames = frame_t)
+    doc.addPageTemplates([page_template])
     doc.build(story, canvasmaker=NumberedCanvas)
 
 
@@ -142,11 +143,10 @@ def psalm_split_correctly(psalm, story):
     # accepts a Psalm (obj) and a Story (obj) and adds paragraph-wise to keep stanzas together
 
     for stanza in psalm.paragraphs:
+
         story.append(stanza[2])
+
     return story
-
-
-
 
 
 class NumberedCanvas(canvas.Canvas):
@@ -159,51 +159,15 @@ class NumberedCanvas(canvas.Canvas):
         self._saved_page_states.append(dict(self.__dict__))
         self._startPage()
 
-
     def save(self):
         """add page info to each page (page x of y)"""
         num_pages = len(self._saved_page_states)
         for i, state in enumerate(self._saved_page_states):  # counting pages with i
-            print("U")
             self.__dict__.update(state)
-            self.add_header(num_pages,i)  # send 'portrait'/'landscape'
             canvas.Canvas.showPage(self)
         canvas.Canvas.save(self)
 
-    def add_header(self, title:str):
-        # Page Number
-        self.setFont("Minion", 7)
-        PAGE_NUMBER_Y_MARGIN = 5 * mm
-        PAGE_NUMBER_X_MARGIN = 5 * mm
 
-        # even pages get number on left, odd on right
-        x_loc = PAGE_NUMBER_X_MARGIN
-        page = self.getPageNumber()
-        if page % 2:
-            x_loc = C6[0] - PAGE_NUMBER_X_MARGIN
-            self.drawRightString(x_loc, C6[1] - PAGE_NUMBER_Y_MARGIN,
-                                   "%d" % page)
-        else:
-            self.drawString(x_loc, C6[1] - PAGE_NUMBER_Y_MARGIN,
-                              "%d" % page)
-
-        # Title
-
-        self.setFont("Minion", 7)
-        self.setFillColor(MAGNIFICAT_RED)
-        self.textTransform = "uppercase"
-        PAGE_NUMBER_Y_MARGIN = 5 * mm
-        PAGE_NUMBER_X_MARGIN = 15 * mm
-
-        # even pages get number on left, odd on right
-        x_loc = PAGE_NUMBER_X_MARGIN
-        if page % 2:
-            x_loc = C6[0] - PAGE_NUMBER_X_MARGIN
-            self.drawRightString(x_loc, C6[1] - PAGE_NUMBER_Y_MARGIN,
-                                   title)
-        else:
-            self.drawString(x_loc, C6[1] - PAGE_NUMBER_Y_MARGIN,
-                              title)
 
 
 if __name__ == "__main__":
