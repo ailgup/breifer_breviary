@@ -6,6 +6,7 @@ class Breviary:
     EVENING_PRAYER = "Evening Prayer"
     NIGHT_PRAYER = "Night Prayer"
     HOURS = [OFFICE_OF_READINGS, MORNING_PRAYER, DAYTIME_PRAYER, EVENING_PRAYER, NIGHT_PRAYER]
+    HOUR_ABBREVIATIONS = ["or","mp","dp","ep","np"]
 
     SUNDAY = "Sunday"
     MONDAY = "Monday"
