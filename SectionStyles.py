@@ -13,18 +13,18 @@ HEADER_WIDTH = 90 * mm
 POINT_TO_MM = 0.3527
 
 
-
-
 def resize_date_to_fit(text, font, font_size, width=HEADER_WIDTH, percentage_margin=0.75):
     while stringWidth(text, font, font_size) > width * percentage_margin:
         font_size = font_size - 1
 
     return font_size
 
+
 # FORMATTING
 DATE_FONT_SIZE = 13
 LEVEL_FONT_SIZE = 8
 TITLE_FONT_SIZE = 8
+
 
 class BreviarySection(Flowable):
     def __init__(self, x=0, y=0, width=HEADER_WIDTH, height=None):
@@ -72,7 +72,7 @@ class DayHeader(BreviarySection):
         self.BOTTOM_MARGIN = 2
 
         self.x = x
-        self.y = y - self.BOTTOM_MARGIN#add offset to shift down some
+        self.y = y - self.BOTTOM_MARGIN  # add offset to shift down some
         self.width = width
         self.date = date
         self.title = title
@@ -83,6 +83,7 @@ class DayHeader(BreviarySection):
             self.height = self.calc_height()
 
         self.build_table()
+
     # ----------------------------------------------------------------------
 
     def calc_height(self):
@@ -101,21 +102,25 @@ class DayHeader(BreviarySection):
         from reportlab.platypus import Paragraph, TableStyle
         from reportlab.lib.styles import ParagraphStyle, TA_CENTER
         date_para = Paragraph(self.date,
-                          ParagraphStyle(name='day_header_date', alignment=TA_CENTER,fontName='Minion', leading=13, textColor=MAGNIFICAT_RED, fontSize=13))
+                              ParagraphStyle(name='day_header_date', alignment=TA_CENTER, fontName='Minion', leading=13,
+                                             textColor=MAGNIFICAT_RED, fontSize=13))
         if self.level:
             level_para = Paragraph(self.level,
-                                  ParagraphStyle(name='day_header_level', alignment=TA_CENTER,fontName='Minion', leading=8, textColor=MAGNIFICAT_RED,
-                                                 fontSize=8))
+                                   ParagraphStyle(name='day_header_level', alignment=TA_CENTER, fontName='Minion',
+                                                  leading=8, textColor=MAGNIFICAT_RED,
+                                                  fontSize=8))
         else:
-            level_para=None
+            level_para = None
         title_para = Paragraph(self.title,
-                              ParagraphStyle(name='day_header_title', alignment=TA_CENTER,fontName='Minion', leading=8, textColor=black,
-                                             fontSize=8))
-        line_style = [('LINEABOVE',(0,0),(0,0),1,black,'butt'),('LINEABOVE',(2,0),(2,0),1,black,'butt'),
-                      ('LINEBELOW',(0,4),(0,4),1,black,'butt'),('LINEBELOW',(2,4),(2,4),1,black,'butt'),
-                      ('LINEBEFORE',(0,1),(0,3),3,black,'projecting'),('LINEAFTER',(2,1),(2,3),3,black,'projecting')]
-        table_style = TableStyle([('BOTTOMPADDING',(0,0),(-1,-1),0),
-                                  ('TOPPADDING',(0,0),(-1,-1),0)])
+                               ParagraphStyle(name='day_header_title', alignment=TA_CENTER, fontName='Minion',
+                                              leading=8, textColor=black,
+                                              fontSize=8))
+        line_style = [('LINEABOVE', (0, 0), (0, 0), 1, black, 'butt'), ('LINEABOVE', (2, 0), (2, 0), 1, black, 'butt'),
+                      ('LINEBELOW', (0, 4), (0, 4), 1, black, 'butt'), ('LINEBELOW', (2, 4), (2, 4), 1, black, 'butt'),
+                      ('LINEBEFORE', (0, 1), (0, 3), 3, black, 'projecting'),
+                      ('LINEAFTER', (2, 1), (2, 3), 3, black, 'projecting')]
+        table_style = TableStyle([('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+                                  ('TOPPADDING', (0, 0), (-1, -1), 0)])
 
         row_heights = []
         row_heights.append(1)
@@ -133,18 +138,19 @@ class DayHeader(BreviarySection):
             row_heights.append(0)
         row_heights.append(1)
 
-        t=Table([["","",""],["",date_para,""],["",level_para,""],["",title_para,""],["","",""]],colWidths=[5*mm,HEADER_WIDTH-10*mm,5*mm],rowHeights=row_heights, style = line_style, spaceBefore=self.TOP_MARGIN, spaceAfter=self.BOTTOM_MARGIN)
-
+        t = Table([["", "", ""], ["", date_para, ""], ["", level_para, ""], ["", title_para, ""], ["", "", ""]],
+                  colWidths=[5 * mm, HEADER_WIDTH - 10 * mm, 5 * mm], rowHeights=row_heights, style=line_style,
+                  spaceBefore=self.TOP_MARGIN, spaceAfter=self.BOTTOM_MARGIN)
 
         t.setStyle(table_style)
 
-        (w,h) = t.wrap(HEADER_WIDTH,99999)
+        (w, h) = t.wrap(HEADER_WIDTH, 99999)
         k = KeepTogether(t)
         k.title = "day_header"
-        k.payload=self.date+" "+self.level+" "+self.title
-        k.payload = k.payload.replace("  "," ")
+        k.payload = self.date + " " + self.level + " " + self.title
+        k.payload = k.payload.replace("  ", " ")
         self.height = h
-        self.paragraphs.append((w,h,k))
+        self.paragraphs.append((w, h, k))
 
     # def draw(self):
     #     """
@@ -216,7 +222,6 @@ def resize_font_to_fit(text, font, font_size, width=HEADER_WIDTH, percentage_mar
 
 
 class HourHeader(BreviarySection):
-
     """
     Draw a header for the hour, center bolded, red text
     
@@ -240,25 +245,28 @@ class HourHeader(BreviarySection):
             self.height = self.calc_height()
         else:
             self.height = height
-        self.paragraphs=self.build_paragraphs()
+        self.paragraphs = self.build_paragraphs()
+
     # ----------------------------------------------------------------------
     def build_paragraphs(self):
         from CustomFlowables import Paragraph
         from reportlab.lib.styles import ParagraphStyle
         paragraphs = []
 
-        string = "<para align=center>"+self.hour+"</para>"
-        P = Paragraph(string,ParagraphStyle(name='Psalm', fontName='MinionSub_bold', leading=9, textColor=MAGNIFICAT_RED, fontSize=10))
+        string = "<para align=center>" + self.hour + "</para>"
+        P = Paragraph(string,
+                      ParagraphStyle(name='Psalm', fontName='MinionSub_bold', leading=9, textColor=MAGNIFICAT_RED,
+                                     fontSize=10))
         P.title = "hour_header"
         P.payload = self.hour
         w, h = P.wrap(HEADER_WIDTH, 99999)
         self.height = self.height + h
         paragraphs.append((w, h, P))
 
-        #S = Spacer(HEADER_WIDTH, 5)
-        #w, h = S.wrap(HEADER_WIDTH, 99999)
-        #paragraphs.append((w, h, S))
-        #self.height += h
+        # S = Spacer(HEADER_WIDTH, 5)
+        # w, h = S.wrap(HEADER_WIDTH, 99999)
+        # paragraphs.append((w, h, S))
+        # self.height += h
 
         return paragraphs
 
@@ -291,7 +299,7 @@ class Hymn(BreviarySection):
     """
 
     # ----------------------------------------------------------------------
-    def __init__(self, hymns:Breviary.Hymn, x=0, y=0, width=HEADER_WIDTH, height=None):
+    def __init__(self, hymns: Breviary.Hymn, x=0, y=0, width=HEADER_WIDTH, height=None):
         Flowable.__init__(self)
         self.x = x
         self.y = y
@@ -318,8 +326,9 @@ class Hymn(BreviarySection):
         self.height = self.height + s.height
         for h in self.hymns:
             if h["saint_michaels_num"]:
-                st_m_string = " { #"+h["saint_michaels_num"]+"} "
-            antiphon_string = "<para><b> " + h["name"] + "</b><font color='#D63254'> ( #" + h["number"] + ")"+st_m_string+"</font></para>"
+                st_m_string = " { #" + h["saint_michaels_num"] + "} "
+            antiphon_string = "<para><b> " + h["name"] + "</b><font color='#D63254'> ( #" + h[
+                "number"] + ")" + st_m_string + "</font></para>"
             P = Paragraph(antiphon_string,
                           ParagraphStyle(name='Psalm', fontName='Minion', leading=9, textColor=black, fontSize=8))
 
@@ -332,6 +341,8 @@ class Hymn(BreviarySection):
         paragraphs.append((w, h, S))
         self.height += h
         return paragraphs
+
+
 class Antiphon(BreviarySection):
     """
     antiphon(s) for the psalms, for multiple, pass a list of tuples
@@ -359,22 +370,25 @@ class Antiphon(BreviarySection):
         self.paragraphs = self.build_paragraphs()
 
     def build_paragraphs(self):
-        from reportlab.platypus import Paragraph
+        from CustomFlowables import Paragraph
         from reportlab.lib.styles import ParagraphStyle
 
         paragraphs = []
         for a in self.antiphon:
 
+            formatted_antiphon = self.format_alleluia(a["ant"])
             if self.antiphon.index(a) == 0:
-                antiphon_string = "<para><font color='#D63254'>" + a["title"] + '</font> ' + a["ant"] + "</para>"
+                antiphon_string = "<para><font color='#D63254'>" + a["title"] + '</font> ' +formatted_antiphon + "</para>"
                 P = Paragraph(antiphon_string,
-                              ParagraphStyle(name='antiphon_first', fontName='Minion', leading=10, textColor=black, fontSize=8))
+                              ParagraphStyle(name='antiphon_first', fontName='Minion', leading=10, textColor=black,
+                                             fontSize=8))
 
             else:
                 antiphon_string = "<para leftIndent='15' firstLineIndent='-5'> <font color='#D63254'>" + a[
-                    "title"] + "</font> " + a["ant"] + "</para>"
+                    "title"] + "</font> " + formatted_antiphon + "</para>"
                 P = Paragraph(antiphon_string,
-                              ParagraphStyle(name='antiphon_secondary', fontName='Minion', leading=7, textColor=black, fontSize=7))
+                              ParagraphStyle(name='antiphon_secondary', fontName='Minion', leading=7, textColor=black,
+                                             fontSize=7))
 
             w, h = P.wrap(HEADER_WIDTH, 99999)
             self.height = self.height + h
@@ -386,6 +400,10 @@ class Antiphon(BreviarySection):
         paragraphs.append((w, h, S))
         self.height += h
         return paragraphs
+    def format_alleluia(self,str_to_format):
+        # filter alleluia so parenthesis is red
+        reformated_string=str_to_format.replace("(alleluia)","<font color='#D63254'>(</font>alleluia<font color='#D63254'>)</font>")
+        return reformated_string
 
 
 class Psalm(BreviarySection):
@@ -602,7 +620,6 @@ class Reading(BreviarySection):
         text_remainder = text_remainder.replace(LINE_BREAK, LINE_BREAK + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
         reading_string = "<para align=left >" + text_remainder + "</para>"
 
-
         T2 = Table([[P, P2]])
         # T=Table([["1","2"],["3","4"]])
         T2.setStyle(TableStyle([('SPAN', (0, 1), (1, 1)),
@@ -614,7 +631,6 @@ class Reading(BreviarySection):
                                 ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
                                 ('BOTTOMPADDING', (0, 1), (1, 1), 5)]))
 
-
         w, h = T2.wrap(HEADER_WIDTH, 999999)
         self.height += h
         paragraphs.append((w, h, T2))
@@ -622,7 +638,7 @@ class Reading(BreviarySection):
         P3 = Paragraph(reading_string,
                        ParagraphStyle(name='Psalm', fontName='Minion', leading=8, textColor=black, fontSize=FONT_SIZE))
 
-        w, h = P3.wrap(HEADER_WIDTH, 162*mm)
+        w, h = P3.wrap(HEADER_WIDTH, 162 * mm)
         self.height += h
         paragraphs.append((w, h, P3))
 
@@ -819,6 +835,61 @@ class SectionHeader(BreviarySection):
         title_1 = "<para><b><i>" + self.title + "</i></b></para>"
         P1 = Paragraph(title_1, ParagraphStyle(name='Psalm', fontName='Minion', leading=10, textColor=MAGNIFICAT_RED,
                                                fontSize=10, alignment=TA_RIGHT))
+        w, h = P1.wrap(HEADER_WIDTH, 99999)
+        self.height = self.height + h
+        paragraphs.append((w, h, P1))
+
+        S = Spacer(HEADER_WIDTH, 5)
+        w, h = S.wrap(HEADER_WIDTH, 99999)
+        paragraphs.append((w, h, S))
+        self.height += h
+
+        return paragraphs
+
+
+class Invitatory(Antiphon):
+    def __init__(self, *args, **kwargs):
+        Flowable.__init__(self)
+        s = SectionHeader(title="Invitatory")
+        a = Antiphon(self, *args, **kwargs)
+
+        self.paragraphs = s.paragraphs + a.paragraphs
+        print(self.paragraphs)
+
+
+class Instruction(BreviarySection):
+    """
+    Intercessions...
+
+    """
+
+    # ----------------------------------------------------------------------
+    def __init__(self, x=0, y=0, width=HEADER_WIDTH, height=None, string=""):
+        Flowable.__init__(self)
+        self.x = x
+        self.y = y
+        self.width = width
+        self.string = string
+
+        if not height:
+            self.height = 0
+        else:
+            self.height = height
+
+        self.paragraphs = self.build_paragraphs()
+
+    def build_paragraphs(self):
+
+        from reportlab.platypus import Paragraph, Spacer
+
+        from reportlab.lib.styles import ParagraphStyle
+        from reportlab.lib.enums import TA_LEFT, TA_RIGHT, TA_CENTER, TA_JUSTIFY
+        paragraphs = []
+
+        # title
+        title_1 = "<para>" + self.string + "</para>"
+        P1 = Paragraph(title_1, ParagraphStyle(name='Psalm', fontName='Minion', leading=8, textColor=MAGNIFICAT_RED,
+                                               fontSize=8, alignment=TA_LEFT))
         w, h = P1.wrap(HEADER_WIDTH, 99999)
         self.height = self.height + h
         paragraphs.append((w, h, P1))

@@ -16,6 +16,7 @@ class Breviary:
     SATURDAY = "Saturday"
     DAYS = [SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY]
 
+
     Antiphon = {"title": "", "ant": ""}
     Psalm = {"titles": [], "verse": "", "summary": "", "summary_verse": "", "text": ""}
     Reading = {"verse": "", "text": ""}
@@ -31,6 +32,7 @@ class Hour:
         self.week_roman = ""
         self.day = ""
         self.hour = ""
+        self.invitatory = [] #List of Antiphon type
         self.hymn = []  # List of Hymn type
         self.ant_1 = []  # List of Antiphon type
         self.ant_2 = []
@@ -90,6 +92,7 @@ def process_row(row):
     h.day = row["day"]
     h.hour = row["hour"]
 
+    h.invitatory = row["invitatory"]
     h.hymn = row["hymn"]
     h.ant_1 = row["ant_1"]
     h.ant_2 = row["ant_2"]

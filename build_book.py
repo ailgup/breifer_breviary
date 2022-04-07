@@ -20,7 +20,7 @@ MAGNIFICAT_RED = Color(214 / 255, 50 / 255, 84 / 255, alpha=1)
 antiphon_on_current_page = False
 
 
-def build_hour(h, story):
+def build_mp_ep(h, story):
     # Header
     box = DayHeader(date=h.day, title="Week " + h.week_roman)
     story = psalm_split_correctly(box, story)
@@ -63,24 +63,81 @@ def build_hour(h, story):
     if h.hour == Breviary.MORNING_PRAYER:
         s = SectionHeader(title="Canticle of Zechariah")
         story = psalm_split_correctly(s, story)
-    elif h.hour == Breviary.EVENING_PRAYER:
+    elif Breviary.EVENING_PRAYER in h.hour:
         s = SectionHeader(title="Canticle of Mary")
         story = psalm_split_correctly(s, story)
     elif h.hour == Breviary.NIGHT_PRAYER:
         s = SectionHeader(title="Canticle of Simeon")
         story = psalm_split_correctly(s, story)
 
-    a = Antiphon(antiphon=h.canticle_ant)
+    if h.canticle_ant:
+        a = Antiphon(antiphon=h.canticle_ant)
+    else:
+        a = Instruction(string="Antiphon, as in the Proper of Seasons")
     story = psalm_split_correctly(a, story)
 
     i = Intercessions(intercessions=h.intercessions)
     story = psalm_split_correctly(i, story)
-
-    p = Prayer(prayers=h.prayer)
+    if h.prayer:
+        p = Prayer(prayers=h.prayer)
+    else:
+        p = Instruction(string="Prayer, as in the Proper of Seasons")
     story = psalm_split_correctly(p, story)
     return story
 
+def build_oor(h, story):
+    # Header
+    box = DayHeader(date=h.day, title="Week " + h.week_roman)
+    story = psalm_split_correctly(box, story)
 
+    hour = HourHeader(hour=h.hour)
+    story=psalm_split_correctly(hour,story)
+
+    #Invitatory
+    a = Invitatory(antiphon=h.invitatory)
+    story = psalm_split_correctly(a, story)
+
+    # Hymn
+    hymn = Hymn(hymns=h.hymn)
+    story = psalm_split_correctly(hymn, story)
+
+    # PSALMODY
+    a = Antiphon(antiphon=h.ant_1)
+    story = psalm_split_correctly(a, story)
+    p = Psalm(h.ps_1)
+    story = psalm_split_correctly(p, story)
+    a = Antiphon(antiphon=h.ant_1)
+    story = psalm_split_correctly(a, story)
+
+    a = Antiphon(antiphon=h.ant_2)
+    story = psalm_split_correctly(a, story)
+    p = Psalm(h.ps_2)
+    story = psalm_split_correctly(p, story)
+    a = Antiphon(antiphon=h.ant_2)
+    story = psalm_split_correctly(a, story)
+
+    a = Antiphon(antiphon=h.ant_3)
+    story = psalm_split_correctly(a, story)
+    p = Psalm(h.ps_3)
+    story = psalm_split_correctly(p, story)
+    a = Antiphon(antiphon=h.ant_3)
+    story = psalm_split_correctly(a, story)
+
+    if h.reading:
+        r = Reading(reading=h.reading)
+        psalm_split_correctly(r, story)
+    if h.response:
+        r = Responsory(responses=h.response)
+        psalm_split_correctly(r, story)
+    if h.prayer:
+        p = Prayer(prayers=h.prayer)
+        story = psalm_split_correctly(p, story)
+    return story
+def build_hour(h,story):
+    if Breviary.MORNING_PRAYER in h.hour or Breviary.EVENING_PRAYER in h.hour:
+        return build_mp_ep(h,story=story)
+    elif Breviary.OFFICE_OF_READINGS in h.hour:
+        return build_oor(h,story)
 def build_story():
     story = []
     rows = fetch_rows()

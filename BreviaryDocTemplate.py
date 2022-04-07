@@ -21,9 +21,12 @@ class BreviaryDocTemplate(BaseDocTemplate):
 
 
     def afterFlowable(self, flowable):
-        if type(flowable) is Paragraph:
-            #print("after para")
-            self.current_spread_para_ids.append(flowable.getPlainText(identify=1))
+        try:
+            if type(flowable) is Paragraph:
+                print("after para")
+                self.current_spread_para_ids.append(flowable.getPlainText(identify=1))
+        except Exception:
+            pass
     def filterFlowables(self,flowables):
 
         #ensure no duplicate antiphons on the same spread
