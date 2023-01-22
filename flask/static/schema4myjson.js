@@ -20,13 +20,7 @@ var scheme = {
     },
     "type": "object",
     "id": "https://niebert.github.io/json-editor",
-    "options": {
-        "disable_collapse": false,
-        "disable_edit_json": false,
-        "disable_properties": false,
-        "collapsed": false,
-        "hidden": false
-    },
+
     "defaultProperties": [
         "invitatory",
         "psalms",
@@ -41,26 +35,16 @@ var scheme = {
             "type": "array",
             "id": "/properties/invitatory",
             "title": "Invitatory",
-            "format": "tabs",
+            "format": "table",
             "options": {
-                "disable_collapse": false,
-                "disable_array_add": false,
-                "disable_array_delete": false,
-                "disable_array_reorder": false,
-                "disable_properties": false,
-                "collapsed": false,
-                "hidden": false
+                
             },
             "items": {
                 "type": "object",
                 "id": "/properties/invitatory/items",
                 "title": "Title Root Invitatory ",
                 "options": {
-                    "disable_collapse": false,
-                    "disable_edit_json": false,
-                    "disable_properties": false,
-                    "collapsed": false,
-                    "hidden": false
+                    
                 },
                 "defaultProperties": [
                     "title",
@@ -73,7 +57,7 @@ var scheme = {
                         "title": "Title",
                         "default": "",
                         "format": "text",
-                        "description": "Description for 'title' Type: 'string' Path: '/properties/invitatory/items/properties/title'",
+                        "description": "",
                         "options": {
                             "hidden": false
                         },
@@ -85,7 +69,7 @@ var scheme = {
                         "title": "Ant",
                         "default": "",
                         "format": "text",
-                        "description": "Description for 'ant' Type: 'string' Path: '/properties/invitatory/items/properties/ant'",
+                        "description": "",
                         "options": {
                             "hidden": false
                         },
@@ -99,15 +83,9 @@ var scheme = {
             "type": "array",
             "id": "/properties/psalms",
             "title": "Psalms",
-            "format": "tabs",
+            "format": "table",
             "options": {
-                "disable_collapse": false,
-                "disable_array_add": false,
-                "disable_array_delete": false,
-                "disable_array_reorder": false,
-                "disable_properties": false,
-                "collapsed": false,
-                "hidden": false
+                
             },
             "items": {
                 "headerTemplate": "Psalms {{i1}}",
@@ -117,11 +95,7 @@ var scheme = {
                         "id": "/properties/psalms/oneof0",
                         "title": "oneof 0 /properties/psalms",
                         "options": {
-                            "disable_collapse": false,
-                            "disable_edit_json": false,
-                            "disable_properties": false,
-                            "collapsed": false,
-                            "hidden": false
+                            
                         },
                         "defaultProperties": [
                             "ps_num",
@@ -134,7 +108,7 @@ var scheme = {
                                 "id": "/properties/psalms/items/properties/ps_num",
                                 "title": "Ps Num",
                                 "default": 1,
-                                "description": "A description for 'ps_num'  Type: 'integer'",
+                                "description": "",
                                 "options": {
                                     "hidden": false
                                 },
@@ -144,15 +118,9 @@ var scheme = {
                                 "type": "array",
                                 "id": "/properties/psalms/items/properties/antiphon",
                                 "title": "Antiphon",
-                                "format": "tabs",
+                                "format": "table",
                                 "options": {
-                                    "disable_collapse": false,
-                                    "disable_array_add": false,
-                                    "disable_array_delete": false,
-                                    "disable_array_reorder": false,
-                                    "disable_properties": false,
-                                    "collapsed": false,
-                                    "hidden": false
+                                    
                                 },
                                 "items": {
                                     "headerTemplate": "Antiphon {{i1}}",
@@ -162,11 +130,7 @@ var scheme = {
                                             "id": "/properties/psalms/items/properties/antiphon/oneof0",
                                             "title": "oneof 0 /properties/psalms/items/properties/antiphon",
                                             "options": {
-                                                "disable_collapse": false,
-                                                "disable_edit_json": false,
-                                                "disable_properties": false,
-                                                "collapsed": false,
-                                                "hidden": false
+                                                
                                             },
                                             "defaultProperties": [
                                                 "title",
@@ -179,7 +143,7 @@ var scheme = {
                                                     "title": "Title",
                                                     "default": "",
                                                     "format": "text",
-                                                    "description": "Description for 'title' Type: 'string' Path: '/properties/psalms/items/properties/antiphon/items/properties/title'",
+                                                    "description": "",
                                                     "options": {
                                                         "hidden": false
                                                     },
@@ -191,7 +155,7 @@ var scheme = {
                                                     "title": "Ant",
                                                     "default": "",
                                                     "format": "text",
-                                                    "description": "Description for 'ant' Type: 'string' Path: '/properties/psalms/items/properties/antiphon/items/properties/ant'",
+                                                    "description": "",
                                                     "options": {
                                                         "hidden": false
                                                     },
@@ -204,11 +168,7 @@ var scheme = {
                                             "id": "/properties/psalms/items/properties/antiphon/oneof1",
                                             "title": "oneof 1 /properties/psalms/items/properties/antiphon",
                                             "options": {
-                                                "disable_collapse": false,
-                                                "disable_edit_json": false,
-                                                "disable_properties": false,
-                                                "collapsed": false,
-                                                "hidden": false
+                                                
                                             },
                                             "defaultProperties": [
                                                 "title",
@@ -221,7 +181,7 @@ var scheme = {
                                                     "title": "Title",
                                                     "default": "",
                                                     "format": "text",
-                                                    "description": "Description for 'title' Type: 'string' Path: '/properties/psalms/items/properties/antiphon/items/properties/title'",
+                                                    "description": "",
                                                     "options": {
                                                         "hidden": false
                                                     },
@@ -233,7 +193,7 @@ var scheme = {
                                                     "title": "Ant",
                                                     "default": "",
                                                     "format": "text",
-                                                    "description": "Description for 'ant' Type: 'string' Path: '/properties/psalms/items/properties/antiphon/items/properties/ant'",
+                                                    "description": "",
                                                     "options": {
                                                         "hidden": false
                                                     },
@@ -246,11 +206,7 @@ var scheme = {
                                             "id": "/properties/psalms/items/properties/antiphon/oneof2",
                                             "title": "oneof 2 /properties/psalms/items/properties/antiphon",
                                             "options": {
-                                                "disable_collapse": false,
-                                                "disable_edit_json": false,
-                                                "disable_properties": false,
-                                                "collapsed": false,
-                                                "hidden": false
+                                                
                                             },
                                             "defaultProperties": [
                                                 "title",
@@ -263,7 +219,7 @@ var scheme = {
                                                     "title": "Title",
                                                     "default": "",
                                                     "format": "text",
-                                                    "description": "Description for 'title' Type: 'string' Path: '/properties/psalms/items/properties/antiphon/items/properties/title'",
+                                                    "description": "",
                                                     "options": {
                                                         "hidden": false
                                                     },
@@ -275,7 +231,7 @@ var scheme = {
                                                     "title": "Ant",
                                                     "default": "",
                                                     "format": "text",
-                                                    "description": "Description for 'ant' Type: 'string' Path: '/properties/psalms/items/properties/antiphon/items/properties/ant'",
+                                                    "description": "",
                                                     "options": {
                                                         "hidden": false
                                                     },
@@ -288,11 +244,7 @@ var scheme = {
                                             "id": "/properties/psalms/items/properties/antiphon/oneof3",
                                             "title": "oneof 3 /properties/psalms/items/properties/antiphon",
                                             "options": {
-                                                "disable_collapse": false,
-                                                "disable_edit_json": false,
-                                                "disable_properties": false,
-                                                "collapsed": false,
-                                                "hidden": false
+                                                
                                             },
                                             "defaultProperties": [
                                                 "title",
@@ -305,7 +257,7 @@ var scheme = {
                                                     "title": "Title",
                                                     "default": "",
                                                     "format": "text",
-                                                    "description": "Description for 'title' Type: 'string' Path: '/properties/psalms/items/properties/antiphon/items/properties/title'",
+                                                    "description": "",
                                                     "options": {
                                                         "hidden": false
                                                     },
@@ -317,7 +269,7 @@ var scheme = {
                                                     "title": "Ant",
                                                     "default": "",
                                                     "format": "text",
-                                                    "description": "Description for 'ant' Type: 'string' Path: '/properties/psalms/items/properties/antiphon/items/properties/ant'",
+                                                    "description": "",
                                                     "options": {
                                                         "hidden": false
                                                     },
@@ -333,26 +285,16 @@ var scheme = {
                                 "type": "array",
                                 "id": "/properties/psalms/items/properties/psalm",
                                 "title": "Psalm",
-                                "format": "tabs",
+                                "format": "table",
                                 "options": {
-                                    "disable_collapse": false,
-                                    "disable_array_add": false,
-                                    "disable_array_delete": false,
-                                    "disable_array_reorder": false,
-                                    "disable_properties": false,
-                                    "collapsed": false,
-                                    "hidden": false
+                                    
                                 },
                                 "items": {
                                     "type": "object",
                                     "id": "/properties/psalms/items/properties/psalm/items",
-                                    "title": "Title Root Psalms Psalm ",
+                                    "title": "",
                                     "options": {
-                                        "disable_collapse": false,
-                                        "disable_edit_json": false,
-                                        "disable_properties": false,
-                                        "collapsed": false,
-                                        "hidden": false
+                                        
                                     },
                                     "defaultProperties": [
                                         "titles",
@@ -366,23 +308,17 @@ var scheme = {
                                             "type": "array",
                                             "id": "/properties/psalms/items/properties/psalm/items/properties/titles",
                                             "title": "Titles",
-                                            "format": "tabs",
+                                            "format": "table",
                                             "options": {
-                                                "disable_collapse": false,
-                                                "disable_array_add": false,
-                                                "disable_array_delete": false,
-                                                "disable_array_reorder": false,
-                                                "disable_properties": false,
-                                                "collapsed": false,
-                                                "hidden": false
+                                                
                                             },
                                             "items": {
                                                 "type": "string",
                                                 "id": "/properties/psalms/items/properties/psalm/items/properties/titles/items",
-                                                "title": "Title Root Psalms Psalm Titles ",
+                                                "title": "",
                                                 "default": "",
                                                 "format": "text",
-                                                "description": "Description for 'items' Type: 'string' Path: '/properties/psalms/items/properties/psalm/items/properties/titles/items'",
+                                                "description": "",
                                                 "options": {
                                                     "hidden": false
                                                 }
@@ -395,7 +331,7 @@ var scheme = {
                                             "title": "Verse",
                                             "default": "",
                                             "format": "text",
-                                            "description": "Description for 'verse' Type: 'string' Path: '/properties/psalms/items/properties/psalm/items/properties/verse'",
+                                            "description": "",
                                             "options": {
                                                 "hidden": false
                                             },
@@ -407,7 +343,7 @@ var scheme = {
                                             "title": "Summary",
                                             "default": "",
                                             "format": "text",
-                                            "description": "Description for 'summary' Type: 'string' Path: '/properties/psalms/items/properties/psalm/items/properties/summary'",
+                                            "description": "",
                                             "options": {
                                                 "hidden": false
                                             },
@@ -419,7 +355,7 @@ var scheme = {
                                             "title": "Summary Verse",
                                             "default": "",
                                             "format": "text",
-                                            "description": "Description for 'summary_verse' Type: 'string' Path: '/properties/psalms/items/properties/psalm/items/properties/summary_verse'",
+                                            "description": "",
                                             "options": {
                                                 "hidden": false
                                             },
@@ -430,8 +366,8 @@ var scheme = {
                                             "id": "/properties/psalms/items/properties/psalm/items/properties/text",
                                             "title": "Text",
                                             "default": "",
-                                            "format": "text",
-                                            "description": "Description for 'text' Type: 'string' Path: '/properties/psalms/items/properties/psalm/items/properties/text'",
+                                            "format": "textarea",
+                                            "description": "",
                                             "options": {
                                                 "hidden": false
                                             },
@@ -448,11 +384,7 @@ var scheme = {
                         "id": "/properties/psalms/oneof1",
                         "title": "oneof 1 /properties/psalms",
                         "options": {
-                            "disable_collapse": false,
-                            "disable_edit_json": false,
-                            "disable_properties": false,
-                            "collapsed": false,
-                            "hidden": false
+                            
                         },
                         "defaultProperties": [
                             "ps_num",
@@ -465,7 +397,7 @@ var scheme = {
                                 "id": "/properties/psalms/items/properties/ps_num",
                                 "title": "Ps Num",
                                 "default": 2,
-                                "description": "A description for 'ps_num'  Type: 'integer'",
+                                "description": "",
                                 "options": {
                                     "hidden": false
                                 },
@@ -475,15 +407,9 @@ var scheme = {
                                 "type": "array",
                                 "id": "/properties/psalms/items/properties/antiphon",
                                 "title": "Antiphon",
-                                "format": "tabs",
+                                "format": "table",
                                 "options": {
-                                    "disable_collapse": false,
-                                    "disable_array_add": false,
-                                    "disable_array_delete": false,
-                                    "disable_array_reorder": false,
-                                    "disable_properties": false,
-                                    "collapsed": false,
-                                    "hidden": false
+                                    
                                 },
                                 "items": {
                                     "headerTemplate": "Antiphon {{i1}}",
@@ -493,11 +419,7 @@ var scheme = {
                                             "id": "/properties/psalms/items/properties/antiphon/oneof0",
                                             "title": "oneof 0 /properties/psalms/items/properties/antiphon",
                                             "options": {
-                                                "disable_collapse": false,
-                                                "disable_edit_json": false,
-                                                "disable_properties": false,
-                                                "collapsed": false,
-                                                "hidden": false
+                                                
                                             },
                                             "defaultProperties": [
                                                 "title",
@@ -510,7 +432,7 @@ var scheme = {
                                                     "title": "Title",
                                                     "default": "",
                                                     "format": "text",
-                                                    "description": "Description for 'title' Type: 'string' Path: '/properties/psalms/items/properties/antiphon/items/properties/title'",
+                                                    "description": "",
                                                     "options": {
                                                         "hidden": false
                                                     },
@@ -522,7 +444,7 @@ var scheme = {
                                                     "title": "Ant",
                                                     "default": "",
                                                     "format": "text",
-                                                    "description": "Description for 'ant' Type: 'string' Path: '/properties/psalms/items/properties/antiphon/items/properties/ant'",
+                                                    "description": "",
                                                     "options": {
                                                         "hidden": false
                                                     },
@@ -535,11 +457,7 @@ var scheme = {
                                             "id": "/properties/psalms/items/properties/antiphon/oneof1",
                                             "title": "oneof 1 /properties/psalms/items/properties/antiphon",
                                             "options": {
-                                                "disable_collapse": false,
-                                                "disable_edit_json": false,
-                                                "disable_properties": false,
-                                                "collapsed": false,
-                                                "hidden": false
+                                                
                                             },
                                             "defaultProperties": [
                                                 "title",
@@ -552,7 +470,7 @@ var scheme = {
                                                     "title": "Title",
                                                     "default": "",
                                                     "format": "text",
-                                                    "description": "Description for 'title' Type: 'string' Path: '/properties/psalms/items/properties/antiphon/items/properties/title'",
+                                                    "description": "",
                                                     "options": {
                                                         "hidden": false
                                                     },
@@ -564,7 +482,7 @@ var scheme = {
                                                     "title": "Ant",
                                                     "default": "",
                                                     "format": "text",
-                                                    "description": "Description for 'ant' Type: 'string' Path: '/properties/psalms/items/properties/antiphon/items/properties/ant'",
+                                                    "description": "",
                                                     "options": {
                                                         "hidden": false
                                                     },
@@ -577,11 +495,7 @@ var scheme = {
                                             "id": "/properties/psalms/items/properties/antiphon/oneof2",
                                             "title": "oneof 2 /properties/psalms/items/properties/antiphon",
                                             "options": {
-                                                "disable_collapse": false,
-                                                "disable_edit_json": false,
-                                                "disable_properties": false,
-                                                "collapsed": false,
-                                                "hidden": false
+                                                
                                             },
                                             "defaultProperties": [
                                                 "title",
@@ -619,11 +533,7 @@ var scheme = {
                                             "id": "/properties/psalms/items/properties/antiphon/oneof3",
                                             "title": "oneof 3 /properties/psalms/items/properties/antiphon",
                                             "options": {
-                                                "disable_collapse": false,
-                                                "disable_edit_json": false,
-                                                "disable_properties": false,
-                                                "collapsed": false,
-                                                "hidden": false
+                                                
                                             },
                                             "defaultProperties": [
                                                 "title",
@@ -664,26 +574,16 @@ var scheme = {
                                 "type": "array",
                                 "id": "/properties/psalms/items/properties/psalm",
                                 "title": "Psalm",
-                                "format": "tabs",
+                                "format": "table",
                                 "options": {
-                                    "disable_collapse": false,
-                                    "disable_array_add": false,
-                                    "disable_array_delete": false,
-                                    "disable_array_reorder": false,
-                                    "disable_properties": false,
-                                    "collapsed": false,
-                                    "hidden": false
+                                    
                                 },
                                 "items": {
                                     "type": "object",
                                     "id": "/properties/psalms/items/properties/psalm/items",
-                                    "title": "Title Root Psalms Psalm ",
+                                    "title": "",
                                     "options": {
-                                        "disable_collapse": false,
-                                        "disable_edit_json": false,
-                                        "disable_properties": false,
-                                        "collapsed": false,
-                                        "hidden": false
+                                        
                                     },
                                     "defaultProperties": [
                                         "titles",
@@ -697,20 +597,14 @@ var scheme = {
                                             "type": "array",
                                             "id": "/properties/psalms/items/properties/psalm/items/properties/titles",
                                             "title": "Titles",
-                                            "format": "tabs",
+                                            "format": "table",
                                             "options": {
-                                                "disable_collapse": false,
-                                                "disable_array_add": false,
-                                                "disable_array_delete": false,
-                                                "disable_array_reorder": false,
-                                                "disable_properties": false,
-                                                "collapsed": false,
-                                                "hidden": false
+                                                
                                             },
                                             "items": {
                                                 "type": "string",
                                                 "id": "/properties/psalms/items/properties/psalm/items/properties/titles/items",
-                                                "title": "Title Root Psalms Psalm Titles ",
+                                                "title": "",
                                                 "default": "",
                                                 "format": "text",
                                                 "description": "Description for 'items' Type: 'string' Path: '/properties/psalms/items/properties/psalm/items/properties/titles/items'",
@@ -779,11 +673,7 @@ var scheme = {
                         "id": "/properties/psalms/oneof2",
                         "title": "oneof 2 /properties/psalms",
                         "options": {
-                            "disable_collapse": false,
-                            "disable_edit_json": false,
-                            "disable_properties": false,
-                            "collapsed": false,
-                            "hidden": false
+                            
                         },
                         "defaultProperties": [
                             "ps_num",
@@ -806,15 +696,9 @@ var scheme = {
                                 "type": "array",
                                 "id": "/properties/psalms/items/properties/antiphon",
                                 "title": "Antiphon",
-                                "format": "tabs",
+                                "format": "table",
                                 "options": {
-                                    "disable_collapse": false,
-                                    "disable_array_add": false,
-                                    "disable_array_delete": false,
-                                    "disable_array_reorder": false,
-                                    "disable_properties": false,
-                                    "collapsed": false,
-                                    "hidden": false
+                                    
                                 },
                                 "items": {
                                     "headerTemplate": "Antiphon {{i1}}",
@@ -824,11 +708,7 @@ var scheme = {
                                             "id": "/properties/psalms/items/properties/antiphon/oneof0",
                                             "title": "oneof 0 /properties/psalms/items/properties/antiphon",
                                             "options": {
-                                                "disable_collapse": false,
-                                                "disable_edit_json": false,
-                                                "disable_properties": false,
-                                                "collapsed": false,
-                                                "hidden": false
+                                                
                                             },
                                             "defaultProperties": [
                                                 "title",
@@ -866,11 +746,7 @@ var scheme = {
                                             "id": "/properties/psalms/items/properties/antiphon/oneof1",
                                             "title": "oneof 1 /properties/psalms/items/properties/antiphon",
                                             "options": {
-                                                "disable_collapse": false,
-                                                "disable_edit_json": false,
-                                                "disable_properties": false,
-                                                "collapsed": false,
-                                                "hidden": false
+                                                
                                             },
                                             "defaultProperties": [
                                                 "title",
@@ -908,11 +784,7 @@ var scheme = {
                                             "id": "/properties/psalms/items/properties/antiphon/oneof2",
                                             "title": "oneof 2 /properties/psalms/items/properties/antiphon",
                                             "options": {
-                                                "disable_collapse": false,
-                                                "disable_edit_json": false,
-                                                "disable_properties": false,
-                                                "collapsed": false,
-                                                "hidden": false
+                                                
                                             },
                                             "defaultProperties": [
                                                 "title",
@@ -950,11 +822,7 @@ var scheme = {
                                             "id": "/properties/psalms/items/properties/antiphon/oneof3",
                                             "title": "oneof 3 /properties/psalms/items/properties/antiphon",
                                             "options": {
-                                                "disable_collapse": false,
-                                                "disable_edit_json": false,
-                                                "disable_properties": false,
-                                                "collapsed": false,
-                                                "hidden": false
+                                                
                                             },
                                             "defaultProperties": [
                                                 "title",
@@ -995,26 +863,16 @@ var scheme = {
                                 "type": "array",
                                 "id": "/properties/psalms/items/properties/psalm",
                                 "title": "Psalm",
-                                "format": "tabs",
+                                "format": "table",
                                 "options": {
-                                    "disable_collapse": false,
-                                    "disable_array_add": false,
-                                    "disable_array_delete": false,
-                                    "disable_array_reorder": false,
-                                    "disable_properties": false,
-                                    "collapsed": false,
-                                    "hidden": false
+                                    
                                 },
                                 "items": {
                                     "type": "object",
                                     "id": "/properties/psalms/items/properties/psalm/items",
-                                    "title": "Title Root Psalms Psalm ",
+                                    "title": "",
                                     "options": {
-                                        "disable_collapse": false,
-                                        "disable_edit_json": false,
-                                        "disable_properties": false,
-                                        "collapsed": false,
-                                        "hidden": false
+                                        
                                     },
                                     "defaultProperties": [
                                         "titles",
@@ -1028,15 +886,9 @@ var scheme = {
                                             "type": "array",
                                             "id": "/properties/psalms/items/properties/psalm/items/properties/titles",
                                             "title": "Titles",
-                                            "format": "tabs",
+                                            "format": "table",
                                             "options": {
-                                                "disable_collapse": false,
-                                                "disable_array_add": false,
-                                                "disable_array_delete": false,
-                                                "disable_array_reorder": false,
-                                                "disable_properties": false,
-                                                "collapsed": false,
-                                                "hidden": false
+                                                
                                             },
                                             "items": {
                                                 "headerTemplate": "Titles {{i1}}",
@@ -1129,26 +981,16 @@ var scheme = {
             "type": "array",
             "id": "/properties/reading",
             "title": "Reading",
-            "format": "tabs",
+            "format": "table",
             "options": {
-                "disable_collapse": false,
-                "disable_array_add": false,
-                "disable_array_delete": false,
-                "disable_array_reorder": false,
-                "disable_properties": false,
-                "collapsed": false,
-                "hidden": false
+                
             },
             "items": {
                 "type": "object",
                 "id": "/properties/reading/items",
                 "title": "Title Root Reading ",
                 "options": {
-                    "disable_collapse": false,
-                    "disable_edit_json": false,
-                    "disable_properties": false,
-                    "collapsed": false,
-                    "hidden": false
+                    
                 },
                 "defaultProperties": [
                     "verse",
@@ -1187,29 +1029,17 @@ var scheme = {
             "type": "array",
             "id": "/properties/response",
             "title": "Response",
-            "format": "tabs",
+            "format": "table",
             "options": {
-                "disable_collapse": false,
-                "disable_array_add": false,
-                "disable_array_delete": false,
-                "disable_array_reorder": false,
-                "disable_properties": false,
-                "collapsed": false,
-                "hidden": false
+                
             },
             "items": {
                 "type": "array",
                 "id": "/properties/response/items",
                 "title": "Title Root Response ",
-                "format": "tabs",
+                "format": "table",
                 "options": {
-                    "disable_collapse": false,
-                    "disable_array_add": false,
-                    "disable_array_delete": false,
-                    "disable_array_reorder": false,
-                    "disable_properties": false,
-                    "collapsed": false,
-                    "hidden": false
+                    
                 },
                 "items": {
                     "headerTemplate": "Title Root Response  {{i1}}",
@@ -1219,11 +1049,7 @@ var scheme = {
                             "id": "/properties/response/items/oneof0",
                             "title": "oneof 0 /properties/response/items",
                             "options": {
-                                "disable_collapse": false,
-                                "disable_edit_json": false,
-                                "disable_properties": false,
-                                "collapsed": false,
-                                "hidden": false
+                                
                             },
                             "defaultProperties": [
                                 "verse",
@@ -1261,11 +1087,7 @@ var scheme = {
                             "id": "/properties/response/items/oneof1",
                             "title": "oneof 1 /properties/response/items",
                             "options": {
-                                "disable_collapse": false,
-                                "disable_edit_json": false,
-                                "disable_properties": false,
-                                "collapsed": false,
-                                "hidden": false
+                                
                             },
                             "defaultProperties": [
                                 "verse",
@@ -1303,11 +1125,7 @@ var scheme = {
                             "id": "/properties/response/items/oneof2",
                             "title": "oneof 2 /properties/response/items",
                             "options": {
-                                "disable_collapse": false,
-                                "disable_edit_json": false,
-                                "disable_properties": false,
-                                "collapsed": false,
-                                "hidden": false
+                                
                             },
                             "defaultProperties": [
                                 "verse",
@@ -1349,26 +1167,16 @@ var scheme = {
             "type": "array",
             "id": "/properties/canticle_ant",
             "title": "Canticle Ant",
-            "format": "tabs",
+            "format": "table",
             "options": {
-                "disable_collapse": false,
-                "disable_array_add": false,
-                "disable_array_delete": false,
-                "disable_array_reorder": false,
-                "disable_properties": false,
-                "collapsed": false,
-                "hidden": false
+                
             },
             "items": {
                 "type": "object",
                 "id": "/properties/canticle_ant/items",
                 "title": "Title Root Canticle Ant ",
                 "options": {
-                    "disable_collapse": false,
-                    "disable_edit_json": false,
-                    "disable_properties": false,
-                    "collapsed": false,
-                    "hidden": false
+                    
                 },
                 "defaultProperties": [
                     "title",
@@ -1408,11 +1216,6 @@ var scheme = {
             "id": "/properties/intercessions",
             "title": "Intercessions",
             "options": {
-                "disable_collapse": false,
-                "disable_edit_json": false,
-                "disable_properties": false,
-                "collapsed": false,
-                "hidden": false
             },
             "defaultProperties": [
                 "first",
@@ -1448,15 +1251,8 @@ var scheme = {
                     "type": "array",
                     "id": "/properties/intercessions/properties/intercessions",
                     "title": "Intercessions",
-                    "format": "tabs",
+                    "format": "table",
                     "options": {
-                        "disable_collapse": false,
-                        "disable_array_add": false,
-                        "disable_array_delete": false,
-                        "disable_array_reorder": false,
-                        "disable_properties": false,
-                        "collapsed": false,
-                        "hidden": false
                     },
                     "items": {
                         "headerTemplate": "Intercessions {{i1}}",
@@ -1466,11 +1262,6 @@ var scheme = {
                                 "id": "/properties/intercessions/properties/intercessions/oneof0",
                                 "title": "oneof 0 /properties/intercessions/properties/intercessions",
                                 "options": {
-                                    "disable_collapse": false,
-                                    "disable_edit_json": false,
-                                    "disable_properties": false,
-                                    "collapsed": false,
-                                    "hidden": false
                                 },
                                 "defaultProperties": [
                                     "verse",
@@ -1508,11 +1299,7 @@ var scheme = {
                                 "id": "/properties/intercessions/properties/intercessions/oneof1",
                                 "title": "oneof 1 /properties/intercessions/properties/intercessions",
                                 "options": {
-                                    "disable_collapse": false,
-                                    "disable_edit_json": false,
-                                    "disable_properties": false,
-                                    "collapsed": false,
-                                    "hidden": false
+                                    
                                 },
                                 "defaultProperties": [
                                     "verse",
@@ -1550,11 +1337,7 @@ var scheme = {
                                 "id": "/properties/intercessions/properties/intercessions/oneof2",
                                 "title": "oneof 2 /properties/intercessions/properties/intercessions",
                                 "options": {
-                                    "disable_collapse": false,
-                                    "disable_edit_json": false,
-                                    "disable_properties": false,
-                                    "collapsed": false,
-                                    "hidden": false
+                                    
                                 },
                                 "defaultProperties": [
                                     "verse",
@@ -1592,11 +1375,7 @@ var scheme = {
                                 "id": "/properties/intercessions/properties/intercessions/oneof3",
                                 "title": "oneof 3 /properties/intercessions/properties/intercessions",
                                 "options": {
-                                    "disable_collapse": false,
-                                    "disable_edit_json": false,
-                                    "disable_properties": false,
-                                    "collapsed": false,
-                                    "hidden": false
+                                    
                                 },
                                 "defaultProperties": [
                                     "verse",
@@ -1634,11 +1413,7 @@ var scheme = {
                                 "id": "/properties/intercessions/properties/intercessions/oneof4",
                                 "title": "oneof 4 /properties/intercessions/properties/intercessions",
                                 "options": {
-                                    "disable_collapse": false,
-                                    "disable_edit_json": false,
-                                    "disable_properties": false,
-                                    "collapsed": false,
-                                    "hidden": false
+                                    
                                 },
                                 "defaultProperties": [
                                     "verse",
@@ -1682,25 +1457,23 @@ var scheme = {
             "type": "array",
             "id": "/properties/prayer",
             "title": "Prayer",
-            "format": "tabs",
-            "options": {
-                "disable_collapse": false,
-                "disable_array_add": false,
-                "disable_array_delete": false,
-                "disable_array_reorder": false,
-                "disable_properties": false,
-                "collapsed": false,
-                "hidden": false
+            "format": "table",
+			"options": {
+                
             },
             "items": {
                 "type": "string",
                 "id": "/properties/prayer/items",
-                "title": "Title Root Prayer ",
+                "title": " ",
                 "default": "",
                 "format": "text",
-                "description": "Description for 'items' Type: 'string' Path: '/properties/prayer/items'",
+                "description": "",
+				"format": "textarea",
                 "options": {
-                    "hidden": false
+                    "hidden": true,
+					"input_height": "50px",
+					"input_width": "500px",
+					"expand_height": true,
                 }
             },
             "propertyOrder": 70
