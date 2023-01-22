@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BB DB</title>
+
+
+<script type="text/javascript" src="{{url_for('static', filename='schema4myjson.js')}}"></script> 
+
+    <script src="https://cdn.jsdelivr.net/npm/@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
+<!--
+<link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
+<link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-exp.min.css">
+<link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-icons.min.css">
+ -->
+</head>
+<body>
+    <div id='editor_holder'></div>
+    <button id='submit'>Submit (console.log)</button>
+
+    <script>
+	
+		//console.log({{ employee }});
+      // Initialize the editor with a JSON schema
+      var editor = new JSONEditor(document.getElementById('editor_holder'),{
+        schema: scheme,
+		theme: 'barebones',
+		disable_edit_json: true,
+		disable_properties: true,
+		disable_collapse: true,
+
+      });
+
+      // Hook up the submit button to log to the console
+      document.getElementById('submit').addEventListener('click',function() {
+        // Get the value from the editor
+        console.log(editor.getValue());
+      });
+    </script>
+    <!--
+                    {% for row in employee %}
+                    <tr><td>week</td><td>{{row.week}}</td></tr>
+                        <tr><td>day</td><td>{{row.day}}</td></tr>
+                        <tr><td>hour</td><td>{{row.hour}}</td></tr>
+						<tr><td>ant_1</td><td>{{row.ant_1}}</td></tr>
+                        <tr><td>ant_2</td><td>{{row.ant_2}}</td></tr>
+                        <tr><td>ant_3</td><td>{{row.ant_3}}</td></tr>
+						<tr><td>ps_1</td><td>{{row.ps_1}}</td></tr>
+                        <tr><td>ps_2</td><td>{{row.ps_2}}</td></tr>
+                        <tr><td>ps_3</td><td>{{row.ps_3}}</td></tr>
+                        <tr><td>resp</td><td>{{row.response}}</td></tr>
+                        <tr><td>cant</td><td>{{row.canticle_ant}}</td></tr>
+						<tr><td>int</td><td>{{row.intercessions}}</td></tr>
+                        <tr><td>prayer</td><td>{{row.prayer}}</td></tr>
+                        <tr><td>hymn</td><td>{{row.hymn}}</td></tr>
+						<tr><td>read</td><td>{{row.reading}}</td></tr>
+                        <tr><td>inv</td><td>{{row.invitatory}}</td></tr>
+                        <tr><td>edit</td><td>
+                            <a class="add" title="Add" data-toggle="tooltip" id="{{row.id}}"><i class="fa fa-user-plus"></i></a>
+                            <a class="edit" title="Edit" data-toggle="tooltip" id="{{row.id}}"><i class="fa fa-pencil"></i></a>
+                            <a class="delete" title="Delete" data-toggle="tooltip" id="{{row.id}}"><i class="fa fa-trash-o"></i></a>
+                        </td>
+                    </tr>   
+                    {% endfor %}     
+					-->
+     
+</body>
+</html>
