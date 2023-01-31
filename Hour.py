@@ -1,3 +1,4 @@
+import json
 # Hour class, is loaded with all the needed data, used as a go-between the db and the pdf
 class Breviary:
     OFFICE_OF_READINGS = "Office of Readings"
@@ -49,20 +50,52 @@ class Hour:
 
     def process_row(self, row):
         pass
+        
+#stolen from https://bobbyhadz.com/blog/python-typeerror-object-of-type-bytes-is-not-json-serializable
+class BytesEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, bytes):
+            return obj.decode('utf-8')
+        return json.JSONEncoder.default(self, obj)
+        
 
 
+def fetch_rows_mysql(table="four_week"):
+    import mysql.connector
+    import json
+    mydb = mysql.connector.connect(
+      host="localhost",
+      user="root",
+      password="",
+      database="briefer"
+    )
+    mycursor = mydb.cursor(dictionary=True)
+
+    mycursor.execute("SELECT * FROM "+table)
+
+    myresult = mycursor.fetchall()
+    print (myresult)
+
+    #js = json.dumps(myresult, cls=BytesEncoder)
+    #js = json.loads(js)
+    js = [ json.loads( row["json_stuff"] ) for row in myresult ]
+    
+    print(js)
+    return js
+      
 def fetch_rows(table="four_week"):
     import psycopg2
     import psycopg2.extras
     rows = []
+    conn = None
     try:
         conn = psycopg2.connect(
             host="localhost",
             database="postgres",
             user="postgres",
-            password="postgres")
+            password="Pa88w0rd")
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cur.execute("SELECT * FROM " + table)
+        cur.execute("SELECT * FROM " + table +" ORDER BY \"id\"")
         for row in cur:
             rows.append(row)
 
@@ -80,6 +113,8 @@ def fetch_rows(table="four_week"):
 
 def process_row(row):
     h = Hour()
+    print("\n\nH:\n",row,type(row))
+    
     h.week = row["week"]
     if row["week"] == 1:
         h.week_roman = "I"
@@ -95,6 +130,9 @@ def process_row(row):
 
     h.invitatory = row["invitatory"]
     h.hymn = row["hymn"]
+    
+    print (h.hymn)
+    
     h.ant_1 = row["ant_1"]
     h.ant_2 = row["ant_2"]
     h.ant_3 = row["ant_3"]

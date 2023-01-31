@@ -307,6 +307,7 @@ class Hymn(BreviarySection):
 
         self.hymns = hymns
 
+        print(hymns,"\n\n\n",type(hymns))
         if not height:
             self.height = 0
         else:

@@ -2,7 +2,9 @@
 from flask import Flask, render_template, redirect, request, flash, jsonify
 import psycopg2 #pip install psycopg2 
 import psycopg2.extras
-     
+from psycopg2.extras import RealDictCursor
+
+import json
 app = Flask(__name__)
      
 app.secret_key = "caircocoders-ednalan"
@@ -11,15 +13,19 @@ DB_HOST = "localhost"
 DB_NAME = "postgres"
 DB_USER = "postgres"
 DB_PASS = "postgres"
-         
+
+
 conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
      
 @app.route('/')
 def index():
-    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cur.execute("SELECT * FROM four_week ORDER BY id")
-    employee = cur.fetchall()
-    return render_template('index.html', employee=employee)
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    cur.execute("SELECT * FROM four_week_condensed ORDER BY id")
+    employee = cur.fetchone()
+    return render_template('index.html', curval=employee)
+    
+    #curval = loaddata(app_root + "/edwin.json")
+    #return render_template('index.html', curval=json.dumps(employee))
   
 @app.route("/ajax_add",methods=["POST","GET"])
 def ajax_add():

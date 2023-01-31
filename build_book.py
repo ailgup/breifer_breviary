@@ -137,11 +137,11 @@ def build_hour(h,story):
     if Breviary.MORNING_PRAYER in h.hour or Breviary.EVENING_PRAYER in h.hour:
         return build_mp_ep(h,story=story)
     elif Breviary.OFFICE_OF_READINGS in h.hour:
-        return build_oor(h,story)
+        return build_oor(h,story=story)
 def build_story():
     story = []
     rows = fetch_rows()
-
+    print("ROWS:",rows)
     for r in rows:
         h = process_row(r)
         story = build_hour(h, story)

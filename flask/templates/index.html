@@ -10,11 +10,16 @@
 <script type="text/javascript" src="{{url_for('static', filename='schema4myjson.js')}}"></script> 
 
     <script src="https://cdn.jsdelivr.net/npm/@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script>
 <!--
 <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
 <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-exp.min.css">
 <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-icons.min.css">
  -->
+ <style>
+
+
+ </style>
 </head>
 <body>
     <div id='editor_holder'></div>
@@ -22,23 +27,55 @@
 
     <script>
 	
-		//console.log({{ employee }});
+	console.log({{curval|tojson|safe}});
       // Initialize the editor with a JSON schema
       var editor = new JSONEditor(document.getElementById('editor_holder'),{
         schema: scheme,
-		theme: 'barebones',
+		theme: 'html',
 		disable_edit_json: true,
 		disable_properties: true,
 		disable_collapse: true,
 
       });
-
+	  editor.on('ready',(data = {{curval.data|tojson|safe}}) => {
+	  console.log("ready");
+	  editor.setValue(data);
+	  });
+      //editor.defaults.options.inputAttributes = {"style":"width: 30px"};
       // Hook up the submit button to log to the console
       document.getElementById('submit').addEventListener('click',function() {
         // Get the value from the editor
         console.log(editor.getValue());
       });
     </script>
+	<script>
+	// Text formatting
+	$(document).ready(function(){
+	$("#editor_holder").on("input", "[name='root[psalms][0][psalm][0][text]']", function(e) {
+		//replace /r/n with <br />
+		$(this).val($(this).val().replace(/(\r\n|\r|\n)/g, '<br /> '));
+		//remove * and †
+		$(this).val($(this).val().replace(/( \*)|( \†)/g, ''));
+	});
+	//reading /r/n to br
+	$("#editor_holder").on("input", "[name='root[reading][0][text]']", function(e) {
+		$(this).val($(this).val().replace(/(\r\n|\r|\n)/g, '<br /> '));
+	  });
+	
+	$("input").each(function(){
+	   //does some stuff;
+		var value = $(this).val().length*6;
+		var size  = value.length;
+		// playing with the size attribute
+		//$(this).attr('size',size);
+
+		// playing css width
+		size = size*2; // average width of a char
+		$(this).css('width',value);
+		console.log("hey");
+	});
+	});
+	</script>
     <!--
                     {% for row in employee %}
                     <tr><td>week</td><td>{{row.week}}</td></tr>
