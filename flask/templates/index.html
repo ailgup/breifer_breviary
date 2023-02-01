@@ -14,14 +14,51 @@
 <!--
 <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
 <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-exp.min.css">
-<link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-icons.min.css">
- -->
+ --><link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-icons.min.css">
+
  <style>
-
-
+.je-header {
+    display: inline-block;
+    margin-block: 0;
+}
+.je-indented-panel {
+     padding: 0 0 0 5px !important;
+     margin: 0 0 0 5px !important;
+	 }
  </style>
 </head>
 <body>
+	<form name="form" id="form" method="post">
+		  <div class="form-group">
+			<table><tr><td>
+			<label>Week</label>
+			<select name="week"  id="weeks" class="form-control">
+			  <option value="" selected="selected"></option>
+			  {% for row in weeks %}
+			  <option value='{{row.week}}'>{{row.week}}</option>
+			  {% endfor %}
+			  </select> 
+			  </td>
+			  <td><label>Day</label><select name="day"  id="days" class="form-control">
+			  <option value="" selected="selected"></option>
+			  {% for row in days %}
+			  <option value='{{row.day}}'>{{row.day}}</option>
+			  {% endfor %}
+			  </select> </td>
+			  <td><label>Hour</label><select name="hour"  id="hours" class="form-control">
+			  <option value="" selected="selected"></option>
+			  {% for row in hours %}
+			  <option value='{{row.hour}}'>{{row.hour}}</option>
+			  {% endfor %}
+			  </select> </td>
+			  <td><button type="submit" class="btn btn-primary">Load</button></td>
+			  </tr></table>
+		  </div>
+		  <div id="show_sub_categories"></div>
+		  
+	</form>
+
+
     <div id='editor_holder'></div>
     <button id='submit'>Submit (console.log)</button>
 
@@ -35,6 +72,8 @@
 		disable_edit_json: true,
 		disable_properties: true,
 		disable_collapse: true,
+		iconlib: "spectre",
+		remove_button_labels: true,	
 
       });
 	  editor.on('ready',(data = {{curval.data|tojson|safe}}) => {
@@ -64,16 +103,14 @@
 	
 	$("input").each(function(){
 	   //does some stuff;
-		var value = $(this).val().length*6;
-		var size  = value.length;
-		// playing with the size attribute
-		//$(this).attr('size',size);
-
-		// playing css width
-		size = size*2; // average width of a char
+		var value = $(this).val().length*7;
 		$(this).css('width',value);
 		console.log("hey");
 	});
+	
+	
+  
+  
 	});
 	</script>
     <!--

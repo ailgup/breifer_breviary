@@ -79,7 +79,7 @@ var scheme = {
       "type": "array",
       "id": "/properties/psalms",
       "title": "Psalms",
-      "format": "table",
+      "format": "grid",
       "options": {},
       "items": {
         "type": "object",
@@ -100,11 +100,7 @@ var scheme = {
             "description": "",
             "options": {
               "hidden": false,
-			  "inputAttributes": {
-                "oninput": "this.style.width = ((this.value.length + 1) * 8) + 'px';",
-                "onfocusin": "this.style.width = ((this.value.length + 1) * 8) + 'px';",
-				"style": "width: 10px",
-              },
+
             },
             "propertyOrder": 10
           },
@@ -133,10 +129,7 @@ var scheme = {
                   "description": "",
                   "options": {
                     "hidden": false,
-			  "inputAttributes": {
-                "oninput": "this.style.width = ((this.value.length + 1) * 8) + 'px';",
-				"change": "this.style.width = ((this.value.length + 1) * 8) + 'px';",
-              },
+
                   },
                   "propertyOrder": 10
                 },
@@ -161,13 +154,13 @@ var scheme = {
             "type": "array",
             "id": "/properties/psalms/items/properties/psalm",
             "title": "Psalm",
-            "format": "table",
+            "format": "grid-strict",
             "options": {},
             "items": {
               "type": "object",
               "id": "/properties/psalms/items/properties/psalm/items",
               "title": "Psalm",
-              "options": {},
+              "options": {"grid_break": true},
               "defaultProperties": [
                 "titles",
                 "verse",
@@ -227,7 +220,8 @@ var scheme = {
                   "format": "text",
                   "description": "",
                   "options": {
-                    "hidden": false
+                    "hidden": false,
+					 "grid_break": true
                   },
                   "propertyOrder": 40
                 },
@@ -239,7 +233,9 @@ var scheme = {
                   "format": "textarea",
                   "description": "",
                   "options": {
-                    "hidden": false
+                    "hidden": false,
+					"input_height": "5px",
+					"expand_height": true
                   },
                   "propertyOrder": 50
                 }
@@ -256,7 +252,7 @@ var scheme = {
       "type": "array",
       "id": "/properties/reading",
       "title": "Reading",
-      "format": "table",
+      "format": "grid",
       "options": {},
       "items": {
         "type": "object",
@@ -289,6 +285,7 @@ var scheme = {
             "description": "",
             "options": {
               "hidden": false,
+			  "input_height": "5px",
               "expand_height": true
             },
             "propertyOrder": 20

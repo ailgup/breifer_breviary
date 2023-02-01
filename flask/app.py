@@ -1,5 +1,8 @@
 #app.py
 from flask import Flask, render_template, redirect, request, flash, jsonify
+from sqlalchemy import create_engine
+from sqlalchemy import text
+from sqlalchemy import String, JSON
 import psycopg2 #pip install psycopg2 
 import psycopg2.extras
 from psycopg2.extras import RealDictCursor
@@ -17,16 +20,20 @@ DB_PASS = "postgres"
 
 conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
      
-@app.route('/')
-def index():
-    cur = conn.cursor(cursor_factory=RealDictCursor)
-    cur.execute("SELECT * FROM four_week_condensed ORDER BY id")
-    employee = cur.fetchone()
-    return render_template('index.html', curval=employee)
+engine = create_engine("mysql://"+DB_USER+":"+DB_PASS+"@"+DB_HOST+"/"+DB_NAME, echo=True)
     
-    #curval = loaddata(app_root + "/edwin.json")
-    #return render_template('index.html', curval=json.dumps(employee))
-  
+@app.route("/get_hour",methods=["POST","GET"])
+def get_child_categories():
+    cur = conn.cursor(cursor_factory=RealDictCursor)    
+    if request.method == 'POST':
+        day = request.form['day']
+        hour = request.form['hour']
+        week = request.form['week']
+        cur.execute("SELECT * FROM four_week_condensed WHERE day = %s AND hour = %s AND week = %s", [day,hour,week])
+        hour = cur.fetchone()
+    return render_template('response.html', hour=hour)
+    
+    
 @app.route("/ajax_add",methods=["POST","GET"])
 def ajax_add():
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -74,6 +81,41 @@ def ajax_delete():
         cur.close()
         msg = 'Record deleted successfully'  
     return jsonify(msg) 
- 
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    with engine.connect() as connection:
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        json_payload=None
+        if request.method == 'POST':
+            print("posting")
+            day = request.form['day']
+            hour = request.form['hour']
+            week = request.form['week']
+            print(day,hour,week)
+            result = connection.execute(text("SELECT * FROM four_week_condensed WHERE day = :d AND hour = :h AND week = :w"),[{"d":day,"h":hour,"w":week}])
+            #cur.execute()
+            #json_payload = cur.fetchone()
+            json_payload = dict(result.one())
+            print(json_payload)
+            
+        else:
+            cur.execute("SELECT * FROM four_week_condensed ORDER BY id")
+            json_payload = cur.fetchone()
+        result = cur.execute("SELECT week FROM four_week_condensed GROUP BY week")
+        weeks = cur.fetchall()
+        
+        result = cur.execute("SELECT day FROM four_week_condensed GROUP BY day")
+        days = cur.fetchall()
+        
+        result = cur.execute("SELECT hour FROM four_week_condensed GROUP BY hour")
+        hours = cur.fetchall()
+        
+        if json_payload == None:
+            json_payload={}
+        print(json_payload)
+        return render_template('index.html', curval=json_payload, weeks = weeks, days = days, hours = hours)
+        
+    #curval = loaddata(app_root + "/edwin.json")
+    #return render_template('index.html', curval=json.dumps(employee))
 if __name__ == "__main__":
     app.run(debug=True)
