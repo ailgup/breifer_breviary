@@ -26,7 +26,41 @@ class Breviary:
     Intercessions = {"first": "", "response": "", "intercessions": []}  # intercessions is list of Responses
     Hymn = {"name": "", "number": "", "saint_michaels_num": "", "in_ibrev": ""}
 
-
+class Antiphon:
+    
+    def __init__(self):
+        self.title = None
+        self.ant = None
+    def __init__(self, title, ant):
+        self.title = title
+        self.ant = ant
+    def __str__(self):
+        return f"Antiphon({self.title}, {self.ant})"
+class Psalm:
+    
+    def __init__(self):
+        self.titles = []
+        self.verse = None
+        self.summary=None
+        self.summary_verse=None
+        self.text = None
+    def __init__(self, titles,verse,summary,summary_verse ,text):
+        self.titles = titles
+        self.verse = verse
+        self.summary=summary
+        self.summary_verse=summary_verse
+        self.text = text
+    def __init__(self, psalm_obj):
+        self.titles = psalm_obj["psalm_number"]
+        self.verse = psalm_obj["descriptor"]
+        self.summary=psalm_obj["scripture_verse"]
+        self.summary_verse=psalm_obj["scripture_verse_author"]
+        self.text = psalm_obj["psalm_text"]
+    def toJSON(self):
+        return {"titles": titles, "verse": self.verse, "summary": self.summary, "summary_verse": self.summary_verse, "text": self.text}
+    def __str__(self):
+        return f"Psalm({self.titles}, {self.verse},{self.summary},{self.summary_verse},{self.text})"   
+    
 class Hour:
     def __init__(self):
         # this is the canonical variable_names should be used everythere!
