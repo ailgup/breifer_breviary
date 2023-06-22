@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 # Make a GET request to the webpage
-url = "https://divineoffice.org/0621-mp/?accessible=true&date=20230621"  # Replace with your desired URL
+url = "https://divineoffice.org/ord-w01-thu-mp/?accessible=true"  # Replace with your desired URL
 
 # Set the User-Agent header to spoof a browser
 headers = {
@@ -15,21 +15,22 @@ response = requests.get(url, headers=headers)
 # Check if the request was successful (status code 200 indicates success)
 def psalm_extractor(html):
     psalm_number_pattern = r'<span style="color: #ff0000;">(.*?)<br />'
-    descriptor_pattern = r'">(.*?)<br />'
-    scripture_verse_pattern = r'\((.*?)\)\.'
-    content_pattern = r'</p>\n<p>(.*?)</p>'
+    descriptor_pattern = r'<br \/>\n(.*?)<\/'
+    scripture_verse_pattern = r'<em>(.+?)<\/em>'
+    scripture_verse_author_pattern = r'\((.+?)\)'
 
     # Extracting sections using regular expressions
     psalm_number = re.search(psalm_number_pattern, html).group(1)
-    descriptor = re.search(descriptor_pattern, html).group(1)
+    descriptor = re.search(descriptor_pattern, html, flags=re.MULTILINE|re.DOTALL).group(1)
     scripture_verse = re.search(scripture_verse_pattern, html).group(1)
-    content = re.findall(content_pattern, html, re.DOTALL)[0]
+    #
+    scripture_verse_author = re.search(scripture_verse_author_pattern, html).group(1)
 
     # Printing the sections
     print("Psalm Number:", psalm_number)
     print("Descriptor:", descriptor)
     print("Scripture Verse:", scripture_verse)
-    print("Content:", content)
+    print("scripture_verse_author:", scripture_verse_author)
 def get_p_text(identifier):
     str=""
     if type(identifier) is list:
@@ -50,8 +51,10 @@ def get_psalm(num):
     '''does require psalm to end with Glory...'''
     
     psalm_match = re.search(r'(?:Ant\.( ?)'+str(num)+'(.+?)<\/p(.+?)<\/p>)(.+?)<p>Glory to the', response.text, flags=re.MULTILINE|re.DOTALL)
+    
     #re.compile(pattern, flags=re.MULTILINE|re.DOTALL)
     if psalm_match:
+        psalm_extractor(psalm_match.group(3).strip())
         psalm_text = psalm_match.group(4)
         # Remove any remaining HTML tags
         #psalm_text = re.sub(r'<.*?>', '', psalm_text)
