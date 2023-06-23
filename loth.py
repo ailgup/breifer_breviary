@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import re
-from Hour import Breviary, Antiphon, Psalm
+from Hour import Breviary, Antiphon, Psalm, Hour
 
 # Helper function to extract text from HTML element
 def get_text_from_element(soup,identifier):
@@ -21,7 +21,10 @@ def get_text_from_element(soup,identifier):
 
 # Helper function to extract information using regular expressions
 def extract_regex(needle, haystack, group):
-    match = re.search(needle, haystack, flags=re.MULTILINE|re.DOTALL)
+    if type(group) is bool:
+        match = re.findall(needle, haystack, flags=re.MULTILINE|re.DOTALL)
+    else:
+        match = re.search(needle, haystack, flags=re.MULTILINE|re.DOTALL)
     results = []
     
     if match:
@@ -37,14 +40,17 @@ def extract_regex(needle, haystack, group):
 
 # Function to extract information from psalm sections
 def extract_psalm(html):
-    psalm_number_pattern = r'<span style="color: #ff0000;">(.*?)<br />'
+    psalm_number_pattern = r'<span style="color: #ff0000;">(.*?)<'
     descriptor_pattern = r'<br \/>\n(.*?)<\/'
     scripture_verse_pattern = r'<em>(.+?)<\/em>'
     scripture_verse_author_pattern = r'\((.+?)\)'
 
     # Extracting sections using regular expressions
     psalm_number = re.search(psalm_number_pattern, html).group(1).strip()
-    descriptor = re.search(descriptor_pattern, html, flags=re.MULTILINE|re.DOTALL).group(1).strip()
+    try:
+        descriptor = re.search(descriptor_pattern, html, flags=re.MULTILINE|re.DOTALL).group(1).strip()
+    except AttributeError:
+        descriptor = ""
     try:
         scripture_verse = re.search(scripture_verse_pattern, html).group(1).strip()
     except AttributeError:
@@ -76,7 +82,11 @@ def extract_intercessions(haystack):
         "(?:<p>(.*?)<br \/>(?:.*?)<\/span> (.*?)<br \/>(?:.*?)<\/p>(?:\n?))",
         first_pass[2], False
     )
-    return {"first": first, "reply": reply, "subsequent": second_pass}
+    
+    for s in second_pass:
+        subsequent.append(s)
+        
+    return {"first": first, "reply": reply, "subsequent": subsequent}
 
 # Function to extract psalm text
 def get_psalm_text(haystack,num):
@@ -92,7 +102,8 @@ def get_psalm_text(haystack,num):
         return psalm
             
             
-def scrape_url(url):
+def scrape_url(hour,url):
+    
     # Fetch the HTML content from the URL with the spoofed User-Agent
     response = requests.get(url, headers=headers)
 
@@ -109,17 +120,29 @@ def scrape_url(url):
             # Extract information from the webpage
             hymn = soup.find('div', class_='hymn-container')
             antiphon1 = Antiphon("Ant. 1", get_text_from_element(soup,"Ant. 1"))
+            hour.ant_1 = [antiphon1]
+            
             antiphon2 = Antiphon("Ant. 2", get_text_from_element(soup,["Ant. 2", "Ant.2"]))
+            hour.ant_2 = [antiphon2]
+            
             antiphon3 = Antiphon("Ant. 3",get_text_from_element(soup,["Ant. 3", "Ant.3"]))
+            hour.ant_3 = [antiphon3]
+            
             psalm1 = Psalm(get_psalm_text(response.text,1))
+            hour.ps_1 = psalm1.toJSON()
+            
             psalm2 = Psalm(get_psalm_text(response.text,2))
+            hour.ps_2 = psalm2.toJSON()
+            
             psalm3 = Psalm(get_psalm_text(response.text,3))
+            hour.ps_3 = psalm3.toJSON()
+            
             reading = extract_regex("READING <\/span>(.*?)<\/p>\n<p>(.*?)<\/p>", response.text, [1, 2])
             responsory = extract_regex(
                 "RESPONSORY(?:\s?)<\/span><\/p>\n<p>(.*?)<br \/>\n<span style=\"color: #ff0000;\">&#8212;<\/span> (.*?)<\/p>\n<p>(.*?)<br \/>\n<span style=\"color: #ff0000;\">&#8212;<\/span> (.*?)<\/p>\n<p>(.*?)<br \/>\n<span style=\"color: #ff0000;\">&#8212;<\/span> (.*?)<\/p>",
                 response.text, [1, 2, 3, 4, 5, 6]
             )
-            canticle_antiphon = extract_regex("CANTICLE OF ZECHARIAH(?:.*?)Ant.(?:\s*?)<\/span> (.*?)<\/p>", response.text, 1)
+            canticle_antiphon = extract_regex("CANTICLE OF (?:.*?)Ant.(?:\s*?)<\/span> (.*?)<\/p>", response.text, 1)
             intercessions = extract_intercessions(response.text)
             concluding_prayer = extract_regex("Concluding Prayer(?:.*?)<p>(.*?)<br />\n<span", response.text, 1)
 
@@ -131,7 +154,7 @@ def scrape_url(url):
             print("Psalm 2:", psalm2)
             print("Antiphon 3:", antiphon3)
             print("Psalm 3:", psalm3)
-            exit(0)
+            #exit(0)
             print("Reading Verse:", reading[0])
             print("Reading:", reading[1])
             print("Responsory Verse 1:", responsory[0])
@@ -140,7 +163,7 @@ def scrape_url(url):
             print("Responsory Response 2:", responsory[3])
             print("Responsory Verse 3:", responsory[4])
             print("Responsory Response 3:", responsory[5])
-            print("Canticle of Zechariah Antiphon:", canticle_antiphon)
+            print("Canticle Antiphon:", canticle_antiphon)
             print("Intercessions:", intercessions)
             print("Concluding Prayer:", concluding_prayer)
 
@@ -160,7 +183,7 @@ headers = {
 # Define the days, weeks, and prayer times
 days = ["mon", "tue", "wed", "thu", "fri", "sat"]
 weeks = ["01", "02", "03", "04"]
-prayer_times = ["mp"]#, "ep"]
+prayer_times = ["ep"]#, "ep"]
 
 # Loop through the combinations of days, weeks, and prayer times
 for week in weeks:
@@ -169,9 +192,13 @@ for week in weeks:
             # Exclude Saturday Evening Prayer
             if day == "sat" and prayer == "ep":
                 continue
-
+            h = Hour()
+            h.week = weeks.index(week)
+            h.day = day
+            h.week_roman = Breviary.WEEK_ROMAN_NUMERALS[weeks.index(week)]
+            h.hour = Breviary.HOURS[Breviary.HOUR_ABBREVIATIONS.index(prayer)]
             # Construct the modified URL
             url = base_url.format(week=week, day=day, prayer=prayer)
             
             print("Week:",week," Day:",day," Prayer:",prayer," ",url,"\n")
-            scrape_url(url)
+            scrape_url(h,url)
